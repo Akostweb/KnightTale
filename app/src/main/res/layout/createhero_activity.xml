@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="5dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="20dp"
+    android:layout_row="2"
+    android:orientation="vertical"
+    tools:context="com.gmail.akostweb.knightstale.MainActivity">
+
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:text="@string/name" />
+
+
+    <EditText
+        android:id="@+id/etFirstName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/name_hint"
+        android:textSize="@dimen/text_size"
+        android:background="#7fa7a7a7" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/left_side"
+            android:layout_weight="0.7"
+            android:gravity="start|center_vertical"
+            android:text="@string/vitality"
+            android:textSize="@dimen/text_stat" />
+
+        <TextView
+            android:id="@+id/etVitality"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/default_stat"
+            android:textSize="@dimen/text_stat"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnPlusVitality"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/plus" />
+
+        <Button
+            android:id="@+id/btnMinusVitality"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/minus" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/left_side"
+            android:layout_weight="0.7"
+            android:gravity="start|center_vertical"
+            android:text="@string/strength"
+            android:textSize="@dimen/text_stat" />
+
+        <TextView
+            android:id="@+id/etStrength"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/default_stat"
+            android:textSize="@dimen/text_stat"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnPlusStrength"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/plus" />
+
+        <Button
+            android:id="@+id/btnMinusStrength"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/minus" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/left_side"
+            android:layout_weight="0.7"
+            android:gravity="start|center_vertical"
+            android:text="@string/agility"
+            android:textSize="@dimen/text_stat" />
+
+        <TextView
+            android:id="@+id/etAgility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/default_stat"
+            android:textSize="@dimen/text_stat"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnPlusAgility"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/plus" />
+
+        <Button
+            android:id="@+id/btnMinusAgility"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/minus" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/layout_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/left_side"
+            android:layout_weight="0.7"
+            android:gravity="start|center_vertical"
+            android:text="@string/focus"
+            android:textSize="@dimen/text_stat" />
+
+        <TextView
+            android:id="@+id/etFocus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/default_stat"
+            android:textSize="@dimen/text_stat"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnPlusFocus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/plus" />
+
+        <Button
+            android:id="@+id/btnMinusFocus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:onClick="OnClick"
+            android:text="@string/minus" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stats_left"
+            android:textSize="@dimen/big_text" />
+
+        <TextView
+            android:id="@+id/tvStatsRemain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="20"
+            android:textSize="@dimen/big_text"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/set_start"
+        android:onClick="OnClick"/>
+
+
+    <CheckBox
+        android:id="@+id/cbFirstComp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.29"
+        android:enabled="true"
+        android:onClick="OnClick"
+        android:text="@string/bot_add1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bot_name"
+            android:layout_weight="0.36"
+            android:gravity="center"
+            android:id="@+id/textView7" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.32"
+            android:background="#7fa7a7a7"/>
+    </LinearLayout>
+
+
+    <CheckBox
+        android:id="@+id/cbSecondComp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.29"
+        android:onClick="OnClick"
+        android:text="@string/bot_add2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bot_name"
+            android:layout_weight="0.36"
+            android:gravity="center"
+            android:id="@+id/textView8" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.32"
+            android:background="#7fa7a7a7"/>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

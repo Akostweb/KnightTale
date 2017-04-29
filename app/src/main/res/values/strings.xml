@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">Knights Tale</string>
+    <string name="start">Start</string>
+    <string name="outpost">outpost on the river</string>
+    <string name="shop">Shop</string>
+    <string name="tavern">Tavern "Small pony"</string>
+    <string name="secretArea">Secret Area</string>
+    <string name="jail">Jail</string>
+    <string name="tower">Eagle tower</string>
+    <string name="fortress">Fortress</string>
+    <string name="arena">Arena</string>
+    <string name="castle">Castle "Black Stone"</string>
+    <string name="player1">Player1</string>
+    <string name="bot1">Bot1</string>
+    <string name="bot2">Bot2</string>
+    <string name="image">image</string>
+    <string name="exit">exit</string>
+    <string name="options">options</string>
+    <string name="faq">FAQ</string>
+    <string name="begin_adventure">Begin adventure</string>
+    <string name="name">Input name of your hero:</string>
+    <string name="name_toast">Input name of your hero</string>
+    <string name="name_hint">Input name of your hero here</string>
+    <string name="vitality">Vitality: </string>
+    <string name="strength">Strength: </string>
+    <string name="agility">Agility: </string>
+    <string name="focus">Focus: </string>
+    <string name="default_stat">2</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="set_start">Stats distributed and ready to fight</string>
+    <string name="ten">    10</string>
+    <string name="stats_left">Stats left:  </string>
+    <string name="bot_add1">Computer player1</string>
+    <string name="bot_add2">Computer player2</string>
+    <string name="bot_name">Input bot name:</string>
+    <string name="no_free_stats">No free stats</string>
+    <string name="stats_limit">Stat`s can`t be less then 2</string>
+    <string name="continue_game">Continue</string>
+    <string name="hp_bar">%1$S/%2$S</string>
+    <string name="location">You came to the .............</string>
+    <string name="action1">Run</string>
+    <string name="action2">Fight</string>
+    <string name="action3">Pay to pass</string>
+    <string name="roll_cube">Roll a cube</string>
+    <string name="back_to_map">Back to map!</string>
+    <string name="game_over">Game Over</string>
+    <string name="title_over">Your life ends here.</string>
+    <string name="buy_outpost">Buy (20 gold)</string>
+    <string name="no_money">Not enough gold</string>
+    <string name="your_house">This is your house</string>
+    <string name="action_buy">Buy this place for %1$S</string>
+    <string name="at_home">You at home sir %1$S , wellcome back! Take a rest!</string>
+    <string name="what_house">You see %1$s and you go in</string>
+    <string name="path">Your way has brought somewhere</string>
+    <string name="experience">Exp %1$S/%2$S</string>
+
+    <!--Arena-->
+    <string name="arena_message">You hear a roars <sq></sq>and furious cries. No doubt, this is an arena. Where brave warriors can get rich or meet their death with honor</string>
+    <string name="arena_title">Famous place with1 a lot of people. You can fight with strongest enemy and take huge amount of money</string>
+    <string name="stop_fight">You decided to go elsewhere</string>
+    <string name="average_monster">Average enemy</string>
+    <string name="strong_monster">Strong enemy</string>
+    <string name="easy_monster">Easy enemy</string>
+    <string name="arena_reject">Not today</string>
+
+    <!--LVL UP-->
+    <string name="vitalityUp">+Vit</string>
+    <string name="strengthUp">+Str </string>
+    <string name="agilityUp">+Agi</string>
+    <string name="focusUp">+Foc</string>
+
+    <!--FIGHT-->
+    <string name="critical_strike">%1$S hits critical strike for %2$S !</string>
+    <string name="evasion_critical_strike">%1$S dodged a critical strike</string>
+    <string name="evasion">%1$S dodged attack of %2$S</string>
+    <string name="hit">%1$S smash for %2$S damage</string>
+    <string name="next_round">Next round!</string>
+    <string name="draw"> Draw! They all dead! </string>
+    <string name="dead">%1$S dead! Winner %2$S! Congratulation !</string>
+
+
+    <!--Bridge-->
+    <string name="buy_place">Buy this place</string>
+    <string name="break_through">Break through</string>
+    <string name="pay_pass">Pay to pass</string>
+
+
+    <!--FAQ-->
+    <string name="vitality_info"><b>*Vitality</b> - gives huge amount of hp and small amount of damage.</string>
+    <string name="strength_info"><b>*Strength</b> - gives huge amount of damage and small amount of hp.</string>
+    <string name="agility_info"><b>*Agility</b> - gives ability to evasion more effective, increase chance to run away.</string>
+    <string name="focus_info"><b>*Focus</b> - increase chance to hit critical strike.</string>
+
+    <!--Options -->
+    <string name="music">Music On/Off</string>
+    <string name="sound">Sound Effects On/Off</string>
+    <string name="vibration">Vibration On/Off</string>
+
+</resources>
