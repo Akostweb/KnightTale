@@ -25,6 +25,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     final public static int MONSTER_EASY = 1;
     final public static int MONSTER_MEDIUM = 2;
     final public static int MONSTER_HARD = 3;
+    final public static int MONSTER_BONUS_NULL = 0;
+    final public static int MONSTER_BONUS_STRENGTH_LOW = 1;
+    final public static int MONSTER_BONUS_STRENGTH_MEDIUM = 2;
+    final public static int MONSTER_BONUS_STRENGTH_HARDCORE = 3;
 
     boolean stopper;
     int step, timeToWait, stepLocation, counterArena;
@@ -149,7 +153,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         iv163 = (ImageView) findViewById(R.id.iv163);
 
         tvGoldShow = (TextView) findViewById(R.id.goldShow);
-        
+
         final HeroClass player = new HeroClass();
         creatorHero(player);
         setStats(player);
@@ -163,7 +167,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         tvTopName = (TextView) findViewById(R.id.tvTopName);
         tvTopName.setText(player.getName());
         lvl = 1;
-        maxExperience = 1000*lvl;
+        maxExperience = 1000 * lvl;
         experience = 0;
         tvExp = (TextView) findViewById(R.id.tvExp);
         experience();
@@ -223,17 +227,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 randomAnimation();
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        stepDotPlayerDelete(player.getStep());
-                        stepSaver(player, step);
-                        stepDotPlayer(player);
-                        if (player.getStep() == 2 || player.getStep() == 6 ||
-                                player.getStep() == 10 || player.getStep() == 12 ||
-                                player.getStep() == 15) {
 
-                            houseAction(player, whatHouse(player.getStep(), outpost, tavern, tower, fortress, castle));
-                        } else {
-                            stepAction(player.getStep(), player);
-                        }
+                        stepController(player, step);
+
+                        stepAction(player, outpost, tavern, tower, fortress, castle);
 
                         if (hpBeforeFight <= 0) endGame();
                         player.setHp(hpBeforeFight);
@@ -249,7 +246,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     }
 
-    public void experience(){
+    public void experience() {
         tvExp.setText(getResources().getString(R.string.experience, String.valueOf(experience),
                 String.valueOf(maxExperience)));
 
@@ -285,7 +282,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                senderStats(heroClass, MONSTER_MEDIUM, 2);
+                                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
 
                             }
                         });
@@ -293,7 +290,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 builder.setNegativeButton(getResources().getString(R.string.strong_monster), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        senderStats(heroClass, MONSTER_HARD, 3);
+                        senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
                     }
                 });
 
@@ -306,7 +303,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     }
 
     public void OnClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btnLvlPlusVit:
                 Toast.makeText(GameMap.this, "vit +", Toast.LENGTH_SHORT).show();
                 disableButtons(false);
@@ -326,30 +323,11 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         }
     }
 
-    public void disableButtons(boolean b){
+    public void disableButtons(boolean b) {
         btnLvlPlusVitality.setEnabled(b);
         btnLvlPlusStrength.setEnabled(b);
         btnLvlPlusAgility.setEnabled(b);
         btnLvlPlusFocus.setEnabled(b);
-    }
-
-
-    public HouseClass whatHouse(int i, HouseClass outpost, HouseClass tavern, HouseClass tower,
-                                HouseClass fortress, HouseClass castle) {
-        if (i == 2) {
-            return outpost;
-        } else if (i == 6) {
-            return tavern;
-        } else if (i == 10) {
-            return tower;
-        } else if (i == 12) {
-            return fortress;
-        } else if (i == 15) {
-            return castle;
-        } else {
-            return outpost;
-        }
-
     }
 
     public void buttonBuy(HeroClass heroClass, HouseClass houseClass) {
@@ -377,7 +355,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             heroClass.setGold(heroClass.getGold() - houseClass.costToPass);
             tvGoldShow.setText(String.valueOf(heroClass.getGold()));
         } else {
-            senderStats(heroClass, MONSTER_MEDIUM, 1);
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_LOW);
         }
 
 
@@ -435,7 +413,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    senderStats(heroClass, MONSTER_HARD, 1);
+                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
                                 }
                             });
 
@@ -446,64 +424,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             }
         };
         fightResult.show(getFragmentManager(), "fight result");
-    }
-
-    public void stepAction(int step, HeroClass heroClass) {
-        if (step == 1) {
-            heroClass.setRoundCount(heroClass.getRoundCount() + 1);
-            heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
-
-        } else if (step == 2) {
-
-
-        } else if (step == 3) {
-
-            senderStats(heroClass, MONSTER_EASY, 0);
-
-
-        } else if (step == 4) {
-
-        } else if (step == 5) {
-            senderStats(heroClass, MONSTER_MEDIUM, 0);
-
-        } else if (step == 6) {
-
-        } else if (step == 7) {
-
-        } else if (step == 8) {
-
-            senderStats(heroClass, MONSTER_EASY, 0);
-
-        } else if (step == 9) {
-
-        } else if (step == 10) {
-
-        } else if (step == 11) {
-
-            senderStats(heroClass, MONSTER_HARD, 0);
-
-        } else if (step == 12) {
-
-        } else if (step == 13) {
-            stopper = false;
-            arenaAction(heroClass);
-
-            if (!stopper) arenaAction(heroClass);
-
-            if (!stopper) arenaAction(heroClass);
-
-
-        } else if (step == 14) {
-
-            senderStats(heroClass, MONSTER_MEDIUM, 0);
-
-        } else if (step == 15) {
-
-        } else if (step == 16) {
-
-            senderStats(heroClass, MONSTER_HARD, 0);
-
-        }
     }
 
     @Override
@@ -529,6 +449,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 setCancelable(false);
                 builder.setMessage(R.string.title_over);
+
                 builder.setPositiveButton(R.string.game_over,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -548,123 +469,11 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     }
 
-    public void senderStats(HeroClass heroClass, int lvl, int arena) {
-        Intent intent = new Intent(GameMap.this, FightActivity.class);
-        heroClass.setHp(hpBeforeFight);
-        intent.putExtra("name", heroClass.getName());
-        intent.putExtra("vitality", heroClass.getVitality());
-        intent.putExtra("strength", heroClass.getStrength());
-        intent.putExtra("agility", heroClass.getAgility());
-        intent.putExtra("focus", heroClass.getFocus());
-        intent.putExtra("hp", heroClass.getHp());
-        intent.putExtra("roundCount", heroClass.getRoundCount());
-        intent.putExtra("lvl", lvl);
-        if (arena == 1) intent.putExtra("lvl monster", 1);
-        if (arena == 2) intent.putExtra("lvl monster", 2);
-        if (arena == 3) intent.putExtra("lvl monster", 3);
-        hpBeforeFight = heroClass.getHp();
-        hpMaxBeforeFight = heroClass.vitality * 500 + heroClass.strength * 100;
-        startActivityForResult(intent, 1);
-
-    }
-
-    public void stepSaver(HeroClass heroClass, int step) {
-        heroClass.setStep(heroClass.getStep() + step);
-        if (heroClass.getStep() > STEP_MAX) {
-            heroClass.setStep(heroClass.getStep() - STEP_MAX);
-            heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
-            if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
-            tvHp.setText(getResources().getString(R.string.hp_bar,
-                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-            heroClass.setGold(heroClass.getGold() + 10);
-            hpBeforeFight = heroClass.getHp();
-            tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-            heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
-            expChecker(heroClass);
-
-        }
-        //Toast.makeText(GameMap.this, " " + heroClass.getStep(), Toast.LENGTH_SHORT).show();
-        stepLocation = heroClass.getStep();
-    }
 
     public void expChecker(HeroClass heroClass) {
         if (heroClass.getExp() >= 1000) {
             heroClass.setExp(0);
 
-        }
-    }
-
-    public void stepDotPlayerDelete(int step) {
-
-        if (step == 1) {
-            iv11.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 2) {
-            iv21.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 3) {
-            iv31.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 4) {
-            iv41.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 5) {
-            iv51.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 6) {
-            iv61.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 7) {
-            iv71.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 8) {
-            iv81.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 9) {
-            iv91.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 10) {
-            iv101.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 11) {
-            iv111.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 12) {
-            iv121.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 13) {
-            iv131.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 14) {
-            iv141.setBackgroundResource(R.drawable.transparent);
-        } else if (step == 15) {
-            iv151.setBackgroundResource(R.drawable.transparent);
-        } else {
-            iv161.setBackgroundResource(R.drawable.transparent);
-        }
-    }
-
-    public void stepDotPlayer(HeroClass heroClass) {
-
-        if (heroClass.getStep() == 1) {
-            iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 2) {
-            iv21.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 3) {
-            iv31.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 4) {
-            iv41.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 5) {
-            iv51.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 6) {
-            iv61.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 7) {
-            iv71.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 8) {
-            iv81.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 9) {
-            iv91.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 10) {
-            iv101.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 11) {
-            iv111.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 12) {
-            iv121.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 13) {
-            iv131.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 14) {
-            iv141.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 15) {
-            iv151.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 16) {
-            iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
         }
     }
 
@@ -833,4 +642,202 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public void onClick(DialogInterface dialogInterface, int i) {
 
     }
+
+    //________________________________________________________________
+    //its deleting, check for round and drawing new dot
+    public void stepController(HeroClass heroClass, int step) {
+        stepDotPlayerDeleteOld(heroClass, step);
+    }
+
+    public void stepChecker(HeroClass heroClass, int step) {
+        heroClass.setStep(heroClass.getStep() + step);
+        if (heroClass.getStep() > STEP_MAX) {
+            heroClass.setStep(heroClass.getStep() - STEP_MAX);
+            heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
+            if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
+            tvHp.setText(getResources().getString(R.string.hp_bar,
+                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+            heroClass.setGold(heroClass.getGold() + 10);
+            hpBeforeFight = heroClass.getHp();
+            tvGoldShow.setText(String.valueOf(heroClass.getGold()));
+            heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
+            expChecker(heroClass);
+
+        }
+        //Toast.makeText(GameMap.this, " " + heroClass.getStep(), Toast.LENGTH_SHORT).show();
+        stepLocation = heroClass.getStep();
+
+        stepDotPlayerNew(heroClass);
+    }
+
+    public void stepDotPlayerDeleteOld(HeroClass heroClass, int step) {
+
+        if (heroClass.getStep() == 1) {
+            iv11.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 2) {
+            iv21.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 3) {
+            iv31.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 4) {
+            iv41.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 5) {
+            iv51.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 6) {
+            iv61.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 7) {
+            iv71.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 8) {
+            iv81.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 9) {
+            iv91.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 10) {
+            iv101.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 11) {
+            iv111.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 12) {
+            iv121.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 13) {
+            iv131.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 14) {
+            iv141.setBackgroundResource(R.drawable.transparent);
+        } else if (heroClass.getStep() == 15) {
+            iv151.setBackgroundResource(R.drawable.transparent);
+        } else {
+            iv161.setBackgroundResource(R.drawable.transparent);
+        }
+
+        stepChecker(heroClass, step);
+    }
+
+    public void stepDotPlayerNew(HeroClass heroClass) {
+
+        if (heroClass.getStep() == 1) {
+            iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 2) {
+            iv21.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 3) {
+            iv31.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 4) {
+            iv41.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 5) {
+            iv51.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 6) {
+            iv61.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 7) {
+            iv71.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 8) {
+            iv81.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 9) {
+            iv91.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 10) {
+            iv101.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 11) {
+            iv111.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 12) {
+            iv121.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 13) {
+            iv131.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 14) {
+            iv141.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 15) {
+            iv151.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 16) {
+            iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
+        }
+    }
+    // ________________________________________________________________
+
+    // Fighting after turn or using houseClass:
+    // - Action for step dot(House action or fight action)
+    // Fighting action:
+    // 1. sendStats to fightActivity
+    // 2.
+    //
+    public void stepAction( HeroClass heroClass, HouseClass outpost, HouseClass tavern,
+                            HouseClass tower,HouseClass fortress,HouseClass castle) {
+        if (heroClass.getStep() == 1) {
+            heroClass.setRoundCount(heroClass.getRoundCount() + 1);
+            heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
+
+        } else if (heroClass.getStep() == 2) {
+
+            houseAction(heroClass, outpost);
+
+        } else if (heroClass.getStep() == 3) {
+
+            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+
+        } else if (heroClass.getStep() == 4) {
+
+        } else if (heroClass.getStep() == 5) {
+
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+
+        } else if (heroClass.getStep() == 6) {
+
+            houseAction(heroClass, tavern);
+
+        } else if (heroClass.getStep() == 7) {
+
+        } else if (heroClass.getStep() == 8) {
+
+            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+
+        } else if (heroClass.getStep() == 9) {
+
+        } else if (heroClass.getStep() == 10) {
+
+            houseAction(heroClass, tower);
+
+        } else if (heroClass.getStep() == 11) {
+
+            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
+
+        } else if (heroClass.getStep() == 12) {
+
+            houseAction(heroClass, fortress);
+
+        } else if (heroClass.getStep() == 13) {
+            stopper = false;
+            arenaAction(heroClass);
+
+            if (!stopper) arenaAction(heroClass);
+
+            if (!stopper) arenaAction(heroClass);
+
+
+        } else if (heroClass.getStep() == 14) {
+
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+
+        } else if (heroClass.getStep() == 15) {
+
+            houseAction(heroClass, castle);
+
+        } else if (heroClass.getStep() == 16) {
+
+            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
+
+        }
+    }
+
+    public void senderStats(HeroClass heroClass, int lvl, int arena) {
+        Intent intent = new Intent(GameMap.this, FightActivity.class);
+        heroClass.setHp(hpBeforeFight);
+        intent.putExtra("name", heroClass.getName());
+        intent.putExtra("vitality", heroClass.getVitality());
+        intent.putExtra("strength", heroClass.getStrength());
+        intent.putExtra("agility", heroClass.getAgility());
+        intent.putExtra("focus", heroClass.getFocus());
+        intent.putExtra("hp", heroClass.getHp());
+        intent.putExtra("roundCount", heroClass.getRoundCount());
+        intent.putExtra("lvl", lvl);
+        intent.putExtra("lvl monster", arena);
+        hpBeforeFight = heroClass.getHp();
+        hpMaxBeforeFight = heroClass.vitality * 500 + heroClass.strength * 100;
+        startActivityForResult(intent, 1);
+
+    }
+
+    //______________________________________________________________________
 }
