@@ -1,8 +1,5 @@
 package com.gmail.akostweb.knightstale;
 
-/**
- * Created by Администратор on 04.03.2017.
- */
 
 public class HeroClass {
 
@@ -44,6 +41,7 @@ public class HeroClass {
     private int step;
     private int roundCount;
     private int gold;
+    private int exp;
 
     public int getExp() {
         return exp;
@@ -52,8 +50,6 @@ public class HeroClass {
     public void setExp(int exp) {
         this.exp = exp;
     }
-
-    private int exp;
 
     public int getGold() {
         return gold;

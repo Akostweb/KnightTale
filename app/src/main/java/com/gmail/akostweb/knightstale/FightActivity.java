@@ -114,70 +114,9 @@ public class FightActivity extends Activity {
             }
         });
 
-    }
+    } // one method called in it roundFight
 
-    public void fightResult (final HeroClass player , final HeroClass monster, final int result){
-        btnFight.setEnabled(false);
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                if (result == DRAW) {
-                    builder.setMessage(getResources().getString(R.string.draw));
-                } else if (result == WINNER_FIRST) {
-                    builder.setMessage(getResources().getString(R.string.dead,
-                            String.valueOf(player.getName()),
-                            String.valueOf(monster.getName())));
-                } else if (result == WINNER_SECOND) {
-                    builder.setMessage(getResources().getString(R.string.dead,
-                            String.valueOf(monster.getName()),
-                            String.valueOf(player.getName())));
-                }
-                builder.setPositiveButton(R.string.back_to_map,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent();
-                                intent.putExtra("hp1", String.valueOf(player.getHp()));
-                                setResult(RESULT_OK, intent);
-                                finish();
-
-                            }
-                        });
-
-                return builder.create();
-            }
-        };
-
-        fightResult.show(getFragmentManager(), "fight result");
-
-    }
-
-    public void fillHpAfterRound(HeroClass player, HeroClass monster){
-        tvFightHP1.setText(getResources().getString(R.string.hp_bar, String.valueOf(player.getHp()),
-                String.valueOf(player.getVitality() * VITALITY_BONUS_HP +
-                        player.getStrength() * STRENGTH_BONUS_HP)));
-        tvFightHP2.setText(getResources().getString(R.string.hp_bar, String.valueOf(monster.getHp()),
-                String.valueOf(monster.getVitality() * VITALITY_BONUS_HP +
-                        monster.getStrength() * STRENGTH_BONUS_HP)));
-    }
-
-    public void hpChecker(HeroClass hero, HeroClass hero1) {
-        if (hero.getHp() <= 0 && hero1.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, DRAW);
-        } else if (hero.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, WINNER_FIRST);
-        } else if (hero1.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, WINNER_SECOND);
-        } else {
-            btnFight.setEnabled(true);
-        }
-    }
+    // Logic of the fighting
 
     public void roundFight(HeroClass hero, HeroClass hero1) {
         if (randomCriticalEvasion(hero, CRIT)) {
@@ -236,7 +175,7 @@ public class FightActivity extends Activity {
         hpChecker(hero, hero1);
 
 
-    }
+    } //main method
 
     public boolean randomCriticalEvasion(HeroClass hero, boolean critOrEvasion) {
 
@@ -260,9 +199,72 @@ public class FightActivity extends Activity {
             }
         }
 
-    }
+    } //Critical strike and evasion working
 
+    public void fillHpAfterRound(HeroClass player, HeroClass monster){
+        tvFightHP1.setText(getResources().getString(R.string.hp_bar, String.valueOf(player.getHp()),
+                String.valueOf(player.getVitality() * VITALITY_BONUS_HP +
+                        player.getStrength() * STRENGTH_BONUS_HP)));
+        tvFightHP2.setText(getResources().getString(R.string.hp_bar, String.valueOf(monster.getHp()),
+                String.valueOf(monster.getVitality() * VITALITY_BONUS_HP +
+                        monster.getStrength() * STRENGTH_BONUS_HP)));
+    } // refresh hp of players
 
+    public void fightResult (final HeroClass player , final HeroClass monster, final int result){
+        btnFight.setEnabled(false);
+        @SuppressLint("ValidFragment") final
+        DialogFragment fightResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                setCancelable(false);
+                if (result == DRAW) {
+                    builder.setMessage(getResources().getString(R.string.draw));
+                } else if (result == WINNER_FIRST) {
+                    builder.setMessage(getResources().getString(R.string.dead,
+                            String.valueOf(player.getName()),
+                            String.valueOf(monster.getName())));
+                } else if (result == WINNER_SECOND) {
+                    builder.setMessage(getResources().getString(R.string.dead,
+                            String.valueOf(monster.getName()),
+                            String.valueOf(player.getName())));
+                }
+                builder.setPositiveButton(R.string.back_to_map,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent();
+                                intent.putExtra("hp1", String.valueOf(player.getHp()));
+                                setResult(RESULT_OK, intent);
+                                finish();
+
+                            }
+                        });
+
+                return builder.create();
+            }
+        };
+
+        fightResult.show(getFragmentManager(), "fight result");
+
+    } // show who is winner
+
+    public void hpChecker(HeroClass hero, HeroClass hero1) {
+        if (hero.getHp() <= 0 && hero1.getHp() <= 0) {
+            btnFight.setEnabled(false);
+            fightResult(hero, hero1, DRAW);
+        } else if (hero.getHp() <= 0) {
+            btnFight.setEnabled(false);
+            fightResult(hero, hero1, WINNER_FIRST);
+        } else if (hero1.getHp() <= 0) {
+            btnFight.setEnabled(false);
+            fightResult(hero, hero1, WINNER_SECOND);
+        } else {
+            btnFight.setEnabled(true);
+        }
+    } // watching hp and called fight result if smdy dead
+
+    //___________________________________________________________________________________
 
     // Generating clone of player hero
 
@@ -273,7 +275,7 @@ public class FightActivity extends Activity {
         hero.setHp(hp);
     }
 
-    //_____________________________________________________________
+    //____________________________________________________________________________________
 
     //Random stats bot creator
     public void setStatsBot(HeroClass monster, int numberOfStats) {
@@ -283,7 +285,7 @@ public class FightActivity extends Activity {
         monster.setCrit(monster.focus * FOCUS_BONUS);
         monster.setEvasion(monster.agility * AGILITY_BONUS);
         monster.setRoundCount(NO_ANSWER_ZERO);
-    }
+    } //Main class
 
     public void creatorMonster(HeroClass heroClass, int count) {
 
@@ -320,18 +322,19 @@ public class FightActivity extends Activity {
         randomStat = random.nextInt(max - min + 1) + min;
         return randomStat;
 
-    }
+    } // giving back random stat
     //_____________________________________________________________________________________
 
     // RANDOM NAME CHOOSER ! ! ! Now its just strong or medium or easy
+
     public String randomMonsterName(int lvl) {
         if (lvl == 1) return "Easy monster";
         if (lvl == 2) return "Medium monster";
         if (lvl == 3) return "Strong monster";
         return "idk";
-    }
+    } // it will be soon, monsters must be with different name
 
-    //_____________________________________________________
+    //_____________________________________________________________________________________
 
     //GRAPHIC FILLING IN
     public void fillAllTexts(HeroClass first, HeroClass second) {
@@ -367,7 +370,7 @@ public class FightActivity extends Activity {
 
     }
 
-    //______________________________________________________________________________
+    //_____________________________________________________________________________________
 
     //
 

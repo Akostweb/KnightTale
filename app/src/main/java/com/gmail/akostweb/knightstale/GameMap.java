@@ -3,14 +3,12 @@ package com.gmail.akostweb.knightstale;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.content.DialogInterface.OnClickListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,6 +27,15 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     final public static int MONSTER_BONUS_STRENGTH_LOW = 1;
     final public static int MONSTER_BONUS_STRENGTH_MEDIUM = 2;
     final public static int MONSTER_BONUS_STRENGTH_HARDCORE = 3;
+    public static final int VITALITY_BONUS_HP = 500;
+    public static final int STRENGTH_BONUS_HP = 100;
+    public static final int STRENGTH_BONUS_DAMAGE = 40;
+    public static final int VITALITY_BONUS_DAMAGE = 10;
+    public static final int FOCUS_BONUS = 9;
+    public static final int AGILITY_BONUS = 6;
+    public static final int ZERO = 0;
+    public static final int START_STATS_DEFAULT = 2;
+    public static final int STATS_TO_PURCHASE = 10;
 
     boolean stopper;
     int step, timeToWait, stepLocation, counterArena;
@@ -103,6 +110,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         btnLvlPlusAgility = (Button) findViewById(R.id.btnLvlPlusAgility);
         btnLvlPlusFocus = (Button) findViewById(R.id.btnLvlPlusFocus);
 
+        //all step dots
+
         iv11 = (ImageView) findViewById(R.id.iv11);
         iv12 = (ImageView) findViewById(R.id.iv12);
         iv13 = (ImageView) findViewById(R.id.iv13);
@@ -152,52 +161,37 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         iv162 = (ImageView) findViewById(R.id.iv162);
         iv163 = (ImageView) findViewById(R.id.iv163);
 
+        //for player
         tvGoldShow = (TextView) findViewById(R.id.goldShow);
-
-        final HeroClass player = new HeroClass();
-        creatorHero(player);
-        setStats(player);
-        player.setRoundCount(0);
-        player.setGold(200);
-        player.setExp(0);
-        iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
-        hpBeforeFight = player.getHp();
-        hpMaxBeforeFight = player.getHp();
-        tvGoldShow.setText(String.valueOf(player.getGold()));
         tvTopName = (TextView) findViewById(R.id.tvTopName);
-        tvTopName.setText(player.getName());
-        lvl = 1;
-        maxExperience = 1000 * lvl;
-        experience = 0;
-        tvExp = (TextView) findViewById(R.id.tvExp);
-        experience();
         tvHp = (TextView) findViewById(R.id.tvHP);
-        tvHp.setText(getResources().getString(R.string.hp_bar,
-                String.valueOf(player.getHp()), String.valueOf(player.getHp())));
+        tvExp = (TextView) findViewById(R.id.tvExp);
 
-
+        //Views for bots
         tvBotName1 = (TextView) findViewById(R.id.tvBotName1);
         tvHp1 = (TextView) findViewById(R.id.tvHP1);
-        final HeroClass bot1 = new HeroClass(randomName(), 2, 2, 2, 2);
-        creatorBot(bot1, 10);
-        setStats(bot1);
-        bot1.setStep(0);
-        tvBotName1.setText(bot1.getName());
-        tvHp1.setText(getResources().getString(R.string.hp_bar,
-                String.valueOf(bot1.getHp()), String.valueOf(bot1.getHp())));
-        bot1.setRoundCount(0);
-
-
         tvBotName2 = (TextView) findViewById(R.id.tvBotName2);
         tvHp2 = (TextView) findViewById(R.id.tvHP2);
-        HeroClass bot2 = new HeroClass(randomName(), 2, 2, 2, 2);
-        creatorBot(bot2, 10);
-        setStats(bot2);
-        bot2.setStep(0);
-        tvBotName2.setText(bot2.getName());
-        tvHp2.setText(getResources().getString(R.string.hp_bar,
-                String.valueOf(bot2.getHp()), String.valueOf(bot2.getHp())));
-        bot2.setRoundCount(0);
+
+        // creating hero
+        final HeroClass player = new HeroClass();
+        creatorHero(player);
+        //__________________________________________________________________________________________
+
+
+        //Creating bot1
+        final HeroClass bot1 = new HeroClass(randomName(), START_STATS_DEFAULT,
+                START_STATS_DEFAULT, START_STATS_DEFAULT, START_STATS_DEFAULT);
+        creatorBot(bot1, STATS_TO_PURCHASE);
+        fillTextBot1(bot1);
+        //__________________________________________________________________________________________
+
+        //Creating bot2
+        HeroClass bot2 = new HeroClass(randomName(), START_STATS_DEFAULT, START_STATS_DEFAULT,
+                START_STATS_DEFAULT, START_STATS_DEFAULT);
+        creatorBot(bot2, STATS_TO_PURCHASE);
+        fillTextBot2(bot2);
+        //__________________________________________________________________________________________
 
 
         final HouseClass outpost = new HouseClass(0, 20, 3, "outpost across a river");
@@ -217,12 +211,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         ivDice = (Button) findViewById(R.id.ivDice);
 
-//сделать точку отправления
-
         ivDice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Handler handler = new Handler();
                 randomAnimation();
                 handler.postDelayed(new Runnable() {
@@ -232,25 +223,15 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
                         stepAction(player, outpost, tavern, tower, fortress, castle);
 
-                        if (hpBeforeFight <= 0) endGame();
+                        if (hpBeforeFight <= ZERO) endGame();
                         player.setHp(hpBeforeFight);
-
                     }
                 }, timeToWait);
-
             }
-
-
         });
-
-
     }
 
-    public void experience() {
-        tvExp.setText(getResources().getString(R.string.experience, String.valueOf(experience),
-                String.valueOf(maxExperience)));
 
-    }
 
     public void arenaAction(final HeroClass heroClass) {
 
@@ -469,6 +450,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     }
 
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+
+    }
 
     public void expChecker(HeroClass heroClass) {
         if (heroClass.getExp() >= 1000) {
@@ -477,24 +462,50 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         }
     }
 
-    public void randomKubThread() {
-        int min = 1;
-        int max = 6;
+
+    public String randomName() {
+        int min = 0;
+        int max = 9;
+
         Random random = new Random();
-        int randomDice = random.nextInt(max - min + 1) + min;
-        image(randomDice);
+        int randomName = random.nextInt(max - min + 1) + min;
+        String real = nameArray[randomName];
+        nameArray[randomName] = "Johhny";
+
+
+        return real;
 
     }
 
-    public int randomKubThreadLast() {
-        int min = 1;
-        int max = 6;
-        Random random = new Random();
-        int randomDice = random.nextInt(max - min + 1) + min;
-        image(randomDice);
-        return randomDice;
+    //Animation of dice
+    public void randomAnimation() {
 
-    }
+        final int count = randomDiceCount();
+
+        final Handler handler = new Handler();
+
+        final Runnable updateDice = new Runnable() {
+            @Override
+            public void run() {
+                step = randomKubThreadLast();
+            }
+        };
+
+        final Thread thread = new Thread() {
+            @Override
+            public void run() {
+                for (int i = 1; i <= count; i++) {
+                    handler.post(updateDice);
+                    try {
+                        Thread.sleep(300 - (285 / count) * i);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+    } // main Thread
 
     public int randomDiceCount() {
         int min = 10;
@@ -505,50 +516,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         timeToWait = s * 185;
         return s;
 
-    }
+    } // method that gives back number that how many time it will dice
 
-    public void randomAnimation() {
+    public int randomKubThreadLast() {
+        int min = 1;
+        int max = 6;
+        Random random = new Random();
+        int randomDice = random.nextInt(max - min + 1) + min;
+        image(randomDice);
+        return randomDice;
 
-        final int count = randomDiceCount();
-
-        final Handler handler = new Handler();
-
-        final Runnable lastDice = new Runnable() {
-            @Override
-            public void run() {
-                step = randomKubThreadLast();
-            }
-        };
-
-        final Runnable updateDice = new Runnable() {
-            @Override
-            public void run() {
-                randomKubThread();
-            }
-        };
-
-        final Thread thread = new Thread() {
-            @Override
-            public void run() {
-                for (int i = 1; i <= count; i++) {
-                    if (i != count) {
-                        handler.post(updateDice);
-                        try {
-                            Thread.sleep(300 - (285 / count) * i);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        handler.post(lastDice);
-                    }
-
-                }
-
-            }
-        };
-        thread.start();
-
-    }
+    } //return number of dice or just change picture
 
     public void image(int random) {
         if (random == 1) {
@@ -565,38 +543,58 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             ivDice.setBackgroundResource(R.drawable.asix);
         }
 
-    }
+    } // just show needed picture
+    //______________________________________________________________________________________________
 
-    public String randomName() {
-        int min = 0;
-        int max = 9;
+    //Creates bots (bot1 or bot2)
 
-        Random random = new Random();
-        int randomName = random.nextInt(max - min + 1) + min;
-        String real = nameArray[randomName];
-        nameArray[randomName] = "Johhny";
-
-
-        return real;
-
-    }
-
-    public void creatorBot(HeroClass heroClass, int count) {
+    public void creatorBot(HeroClass bot, int count) {
 
         for (int i = 1; i <= count; i++) {
             randomStat();
             if (randomStat() == 1) {
-                heroClass.setVitality(heroClass.vitality + 1);
+                bot.setVitality(bot.vitality + 1);
             } else if (randomStat() == 2) {
-                heroClass.setStrength(heroClass.strength + 1);
+                bot.setStrength(bot.strength + 1);
             } else if (randomStat() == 3) {
-                heroClass.setAgility(heroClass.agility + 1);
+                bot.setAgility(bot.agility + 1);
             } else {
-                heroClass.setFocus(heroClass.focus + 1);
+                bot.setFocus(bot.focus + 1);
             }
         }
 
+        setStatsBot(bot);
+        bot.setStep(0);
+        bot.setRoundCount(0);
 
+    }
+
+    public void setStatsBot(HeroClass bot) {
+        bot.setHp(bot.vitality * VITALITY_BONUS_HP + bot.strength * STRENGTH_BONUS_HP);
+        bot.setDamage(bot.strength * STRENGTH_BONUS_DAMAGE + bot.vitality * VITALITY_BONUS_DAMAGE);
+        bot.setCrit(bot.focus * FOCUS_BONUS);
+        bot.setEvasion(bot.agility * AGILITY_BONUS);
+        bot.setStep(1);
+        bot.setRoundCount(0);
+        bot.setRoundCount(0);
+        bot.setGold(200);
+        bot.setExp(0);
+
+        lvl = 1;
+        maxExperience = 1000 * lvl;
+        experience = 0;
+    }
+
+    public void fillTextBot1(HeroClass bot1) {
+        tvBotName1.setText(bot1.getName());
+        tvHp1.setText(getResources().getString(R.string.hp_bar,
+                String.valueOf(bot1.getHp()), String.valueOf(bot1.getHp())));
+    }
+
+    public void fillTextBot2(HeroClass bot2) {
+        tvBotName2.setText(bot2.getName());
+        tvHp2.setText(getResources().getString(R.string.hp_bar,
+                String.valueOf(bot2.getHp()), String.valueOf(bot2.getHp())));
     }
 
     public int randomStat() {
@@ -609,45 +607,14 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
     }
-
-    public void creatorHero(HeroClass heroClass) {
-
-        Intent intent = getIntent();
-        int vitality = Integer.parseInt(intent.getStringExtra("vitality"));
-        int strength = Integer.parseInt(intent.getStringExtra("strength"));
-        int agility = Integer.parseInt(intent.getStringExtra("agility"));
-        int focus = Integer.parseInt(intent.getStringExtra("focus"));
-        String name = intent.getStringExtra("name");
-
-        heroClass.setVitality(vitality);
-        heroClass.setStrength(strength);
-        heroClass.setAgility(agility);
-        heroClass.setFocus(focus);
-        heroClass.setName(name);
+    //______________________________________________________________________________________________
 
 
-    }
-
-    public void setStats(HeroClass hero) {
-        hero.setHp(hero.vitality * 500 + hero.strength * 100);
-        hero.setDamage(hero.strength * 40 + hero.vitality * 10);
-        hero.setCrit(hero.focus * 9);
-        hero.setEvasion(hero.agility * 6);
-        hero.setStep(1);
-        hero.setRoundCount(0);
-
-    }
-
-    @Override
-    public void onClick(DialogInterface dialogInterface, int i) {
-
-    }
-
-    //________________________________________________________________
+    //______________________________________________________________________________________________
     //its deleting, check for round and drawing new dot
     public void stepController(HeroClass heroClass, int step) {
         stepDotPlayerDeleteOld(heroClass, step);
-    }
+    } //Main method, called from here
 
     public void stepChecker(HeroClass heroClass, int step) {
         heroClass.setStep(heroClass.getStep() + step);
@@ -745,16 +712,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
         }
     }
-    // ________________________________________________________________
+    // _____________________________________________________________________________________________
 
     // Fighting after turn or using houseClass:
     // - Action for step dot(House action or fight action)
     // Fighting action:
-    // 1. sendStats to fightActivity
+    // 1. sendStats to fightActivity and starts FightingActivity
     // 2.
     //
-    public void stepAction( HeroClass heroClass, HouseClass outpost, HouseClass tavern,
-                            HouseClass tower,HouseClass fortress,HouseClass castle) {
+    public void stepAction(HeroClass heroClass, HouseClass outpost, HouseClass tavern,
+                           HouseClass tower, HouseClass fortress, HouseClass castle) {
         if (heroClass.getStep() == 1) {
             heroClass.setRoundCount(heroClass.getRoundCount() + 1);
             heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
@@ -834,10 +801,70 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         intent.putExtra("lvl", lvl);
         intent.putExtra("lvl monster", arena);
         hpBeforeFight = heroClass.getHp();
-        hpMaxBeforeFight = heroClass.vitality * 500 + heroClass.strength * 100;
+        hpMaxBeforeFight = heroClass.vitality * VITALITY_BONUS_HP + heroClass.strength * STRENGTH_BONUS_HP;
         startActivityForResult(intent, 1);
 
     }
 
-    //______________________________________________________________________
+    //______________________________________________________________________________________________
+
+    // Creating hero
+    public void creatorHero(HeroClass heroClass) {
+
+        Intent intent = getIntent();
+        int vitality = Integer.parseInt(intent.getStringExtra("vitality"));
+        int strength = Integer.parseInt(intent.getStringExtra("strength"));
+        int agility = Integer.parseInt(intent.getStringExtra("agility"));
+        int focus = Integer.parseInt(intent.getStringExtra("focus"));
+        String name = intent.getStringExtra("name");
+
+        heroClass.setVitality(vitality);
+        heroClass.setStrength(strength);
+        heroClass.setAgility(agility);
+        heroClass.setFocus(focus);
+        heroClass.setName(name);
+
+        setStats(heroClass);
+
+
+    } // Main method, gives everything for creation
+
+    public void setStats(HeroClass hero) {
+        hero.setHp(hero.vitality * VITALITY_BONUS_HP + hero.strength * STRENGTH_BONUS_HP);
+        hero.setDamage(hero.strength * STRENGTH_BONUS_DAMAGE + hero.vitality * VITALITY_BONUS_DAMAGE);
+        hero.setCrit(hero.focus * FOCUS_BONUS);
+        hero.setEvasion(hero.agility * AGILITY_BONUS);
+        hero.setStep(1);
+        hero.setRoundCount(0);
+        hero.setRoundCount(0);
+        hero.setGold(200);
+        hero.setExp(0);
+
+        hpBeforeFight = hero.getHp();
+        hpMaxBeforeFight = hero.getHp();
+        lvl = 1;
+        maxExperience = 1000 * lvl;
+        experience = 0;
+        fillText(hero);
+    }
+
+    public void fillText(HeroClass heroClass) {
+        iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
+        tvGoldShow.setText(String.valueOf(heroClass.getGold()));
+        tvTopName.setText(heroClass.getName());
+        tvHp.setText(getResources().getString(R.string.hp_bar,
+                String.valueOf(heroClass.getHp()), String.valueOf(heroClass.getHp())));
+        experience();
+    }
+
+    public void experience() {
+        tvExp.setText(getResources().getString(R.string.experience, String.valueOf(experience),
+                String.valueOf(maxExperience)));
+
+    } // can be called from other methods
+
+    //______________________________________________________________________________________________
+
+    // Creating bots to play with
+
 }
