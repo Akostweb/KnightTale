@@ -55,6 +55,11 @@
     <string name="path">Your way has brought somewhere</string>
     <string name="experience">Exp %1$S/%2$S</string>
 
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="maybe">maybe</string>
+    <string name="message_text">Outpost</string>
+
     <!--Arena-->
     <string name="arena_message">You hear a roars <sq></sq>and furious cries. No doubt, this is an arena. Where brave warriors can get rich or meet their death with honor</string>
     <string name="arena_title">Famous place with1 a lot of people. You can fight with strongest enemy and take huge amount of money</string>

@@ -36,9 +36,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public static final int ZERO = 0;
     public static final int START_STATS_DEFAULT = 2;
     public static final int STATS_TO_PURCHASE = 10;
+    public static final int OUTPOST = 1;
+    public static final int TAVERN = 2;
+    public static final int TOWER = 3;
+    public static final int FORTRESS = 4;
+    public static final int CASTLE = 5;
 
     boolean stopper;
     int step, timeToWait, stepLocation, counterArena;
+
+    int outpostAnswer;
 
     int ownerOutpost, ownerTavern, ownerTower, ownerFortress, ownerCastle;
 
@@ -96,6 +103,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     int hpBeforeFight, hpMaxBeforeFight;
     int maxExperience, experience, lvl;
 
+    DialogFragment outpostFragment;
+
     private String[] nameArray = {"Asshole", "Cock", "Dick", "Tits", "Bobby", "Hump", "Bravo", "super", "black", "gammy"};
 
     @Override
@@ -109,6 +118,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         btnLvlPlusStrength = (Button) findViewById(R.id.btnLvlPlusStrength);
         btnLvlPlusAgility = (Button) findViewById(R.id.btnLvlPlusAgility);
         btnLvlPlusFocus = (Button) findViewById(R.id.btnLvlPlusFocus);
+
+
+        outpostFragment = new OutpostFragment();
 
         //all step dots
 
@@ -223,7 +235,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
                         stepAction(player, outpost, tavern, tower, fortress, castle);
 
-                        if (hpBeforeFight <= ZERO) endGame();
                         player.setHp(hpBeforeFight);
                     }
                 }, timeToWait);
@@ -233,56 +244,12 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
 
-    public void arenaAction(final HeroClass heroClass) {
 
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                //View view = getActivity().getLayoutInflater().inflate(R.layout.arena_activity, null);
-                //builder.setView(view);
-                setCancelable(false);
-                builder.setMessage(getResources().getString(R.string.arena_message));
-                builder.setTitle(getResources().getString(R.string.arena_title));
-                builder.setIcon(R.drawable.arena);
-
-
-                builder.setPositiveButton(getResources().getString(R.string.stop_fight),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //senderStats(heroClass, MONSTER_EASY);
-                                stopper = true;
-                                dismiss();
-                            }
-                        });
-
-
-                builder.setNeutralButton(getResources().getString(R.string.average_monster),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
-
-                            }
-                        });
-
-                builder.setNegativeButton(getResources().getString(R.string.strong_monster), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
-                    }
-                });
-
-                return builder.create();
-            }
-
-
-        };
-        fightResult.show(getFragmentManager(), "fight result");
+    public void saveOutpostAnswer (int i){
+        outpostAnswer = i;
     }
 
+    // FUTURE THINGS EXPIERENCE AND LEVEL UP TO one of your stats
     public void OnClick(View v) {
         switch (v.getId()) {
             case R.id.btnLvlPlusVit:
@@ -311,145 +278,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         btnLvlPlusFocus.setEnabled(b);
     }
 
-    public void buttonBuy(HeroClass heroClass, HouseClass houseClass) {
-
-        if (houseClass.getOwner() == 0) {
-            if (heroClass.getGold() >= houseClass.getHouseCost()) {
-                heroClass.setGold(heroClass.getGold() - houseClass.getHouseCost());
-                ownerOutpost = 1;
-                houseClass.setOwner(ownerOutpost);
-                Toast.makeText(GameMap.this, " you bought it", Toast.LENGTH_SHORT).show();
-                tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-
-
-            } else {
-                Toast.makeText(GameMap.this, "not enough money", Toast.LENGTH_SHORT).show();
-
-            }
-        } else {
-            Toast.makeText(GameMap.this, "Its already have owner", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void buttonPayPass(HeroClass heroClass, HouseClass houseClass) {
-        if (heroClass.getGold() >= 3) {
-            heroClass.setGold(heroClass.getGold() - houseClass.costToPass);
-            tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-        } else {
-            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_LOW);
-        }
-
-
-    }
-
-    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
-
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                builder.setMessage(getResources().getString(R.string.what_house, houseClass.getName()));
-                builder.setTitle(getResources().getString(R.string.path));
-                builder.setIcon(R.drawable.tavernalert);
-
-                if (houseClass.getOwner() == 0) {
-                    builder.setPositiveButton(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    buttonBuy(heroClass, houseClass);
-                                }
-                            });
-
-                }
-
-
-                if (houseClass.getOwner() == 1) {
-                    builder.setPositiveButton(getResources().getString(R.string.at_home, heroClass.getName()),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
-                                    if (heroClass.getHp() > hpMaxBeforeFight)
-                                        heroClass.setHp(hpMaxBeforeFight);
-                                    tvHp.setText(getResources().getString(R.string.hp_bar,
-                                            String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-
-                                }
-                            });
-
-                } else {
-                    builder.setNeutralButton(R.string.pay_pass,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    buttonPayPass(heroClass, houseClass);
-
-                                }
-                            });
-
-                    builder.setNegativeButton(R.string.break_through,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
-                                }
-                            });
-
-                }
-
-
-                return builder.create();
-            }
-        };
-        fightResult.show(getFragmentManager(), "fight result");
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            Toast.makeText(this, "Ale de vozvrat", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String hp = data.getStringExtra("hp1");
-        tvHp.setText(getResources().getString(R.string.hp_bar,
-                String.valueOf(hp), String.valueOf(hpMaxBeforeFight)));
-
-        hpBeforeFight = Integer.parseInt(hp);
-        if (hpBeforeFight <= 0) endGame();
-        Toast.makeText(this, hpBeforeFight + " ", Toast.LENGTH_SHORT).show();
-    }
-
-    public void endGame() {
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                builder.setMessage(R.string.title_over);
-
-                builder.setPositiveButton(R.string.game_over,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(GameMap.this, MainActivity.class);
-                                startActivity(intent);
-
-
-                            }
-                        });
-
-                return builder.create();
-            }
-        };
-
-        fightResult.show(getFragmentManager(), "fight result");
-
-    }
-
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -476,6 +304,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         return real;
 
     }
+    //______________________________________________________________________________________________
 
     //Animation of dice
     public void randomAnimation() {
@@ -611,6 +440,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
     //______________________________________________________________________________________________
+
     //its deleting, check for round and drawing new dot
     public void stepController(HeroClass heroClass, int step) {
         stepDotPlayerDeleteOld(heroClass, step);
@@ -728,7 +558,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (heroClass.getStep() == 2) {
 
-            houseAction(heroClass, outpost);
+            outpostFragment.show(getFragmentManager(), "outpostFragment");
+            //houseAction(heroClass, outpost);
 
         } else if (heroClass.getStep() == 3) {
 
@@ -786,7 +617,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
 
         }
-    }
+    } // main method for senderStats and houseAction
 
     public void senderStats(HeroClass heroClass, int lvl, int arena) {
         Intent intent = new Intent(GameMap.this, FightActivity.class);
@@ -804,7 +635,203 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         hpMaxBeforeFight = heroClass.vitality * VITALITY_BONUS_HP + heroClass.strength * STRENGTH_BONUS_HP;
         startActivityForResult(intent, 1);
 
+    } //send stats to fight activity
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            Toast.makeText(this, "Ale de vozvrat", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String hp = data.getStringExtra("hp1");
+        tvHp.setText(getResources().getString(R.string.hp_bar,
+                String.valueOf(hp), String.valueOf(hpMaxBeforeFight)));
+
+        hpBeforeFight = Integer.parseInt(hp);
+        if (hpBeforeFight <= ZERO) endGame();
+        Toast.makeText(this, hpBeforeFight + " ", Toast.LENGTH_SHORT).show();
+    } // take back result of the fight
+
+    // taking on HouseClass (can be fighting too)
+
+    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
+
+        @SuppressLint("ValidFragment") final
+        DialogFragment fightResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                setCancelable(false);
+                builder.setMessage(getResources().getString(R.string.what_house, houseClass.getName()));
+                builder.setTitle(getResources().getString(R.string.path));
+                builder.setIcon(R.drawable.tavernalert);
+
+                if (houseClass.getOwner() == 0) {
+                    builder.setPositiveButton(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    buttonBuy(heroClass, houseClass);
+                                }
+                            });
+
+                }
+
+
+                if (houseClass.getOwner() == 1) {
+                    builder.setPositiveButton(getResources().getString(R.string.at_home, heroClass.getName()),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                                    if (heroClass.getHp() > hpMaxBeforeFight)
+                                        heroClass.setHp(hpMaxBeforeFight);
+                                    tvHp.setText(getResources().getString(R.string.hp_bar,
+                                            String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+
+                                }
+                            });
+
+                } else {
+                    builder.setNeutralButton(R.string.pay_pass,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    buttonPayPass(heroClass, houseClass);
+
+                                }
+                            });
+
+                    builder.setNegativeButton(R.string.break_through,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
+                                }
+                            });
+
+                }
+
+
+                return builder.create();
+            }
+        };
+        fightResult.show(getFragmentManager(), "fight result");
     }
+
+    public void buttonBuy(HeroClass heroClass, HouseClass houseClass) {
+
+        if (houseClass.getOwner() == 0) {
+            if (heroClass.getGold() >= houseClass.getHouseCost()) {
+                heroClass.setGold(heroClass.getGold() - houseClass.getHouseCost());
+                ownerOutpost = 1;
+                houseClass.setOwner(ownerOutpost);
+                Toast.makeText(GameMap.this, " you bought it", Toast.LENGTH_SHORT).show();
+                tvGoldShow.setText(String.valueOf(heroClass.getGold()));
+
+
+            } else {
+                Toast.makeText(GameMap.this, "not enough money", Toast.LENGTH_SHORT).show();
+
+            }
+        } else {
+            Toast.makeText(GameMap.this, "Its already have owner", Toast.LENGTH_SHORT).show();
+        }
+    } // button for bying house
+
+    public void buttonPayPass(HeroClass heroClass, HouseClass houseClass) {
+        if (heroClass.getGold() >= 3) {
+            heroClass.setGold(heroClass.getGold() - houseClass.costToPass);
+            tvGoldShow.setText(String.valueOf(heroClass.getGold()));
+        } else {
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_LOW);
+        }
+
+
+    } // if house already earned by someone else  u buy paypass
+
+    // SenderStats here
+
+    public void arenaAction(final HeroClass heroClass) {
+
+        @SuppressLint("ValidFragment") final
+        DialogFragment fightResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                //View view = getActivity().getLayoutInflater().inflate(R.layout.arena_activity, null);
+                //builder.setView(view);
+                setCancelable(false);
+                builder.setMessage(getResources().getString(R.string.arena_message));
+                builder.setTitle(getResources().getString(R.string.arena_title));
+                builder.setIcon(R.drawable.arena);
+
+
+                builder.setPositiveButton(getResources().getString(R.string.stop_fight),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //senderStats(heroClass, MONSTER_EASY);
+                                stopper = true;
+                                dismiss();
+                            }
+                        });
+
+
+                builder.setNeutralButton(getResources().getString(R.string.average_monster),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
+
+                            }
+                        });
+
+                builder.setNegativeButton(getResources().getString(R.string.strong_monster), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+                    }
+                });
+
+                return builder.create();
+            }
+
+
+        };
+        fightResult.show(getFragmentManager(), "fight result");
+    }
+
+    public void endGame() {
+        @SuppressLint("ValidFragment") final
+        DialogFragment fightResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                setCancelable(false);
+                builder.setMessage(R.string.title_over);
+
+                builder.setPositiveButton(R.string.game_over,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(GameMap.this, MainActivity.class);
+                                startActivity(intent);
+
+
+                            }
+                        });
+
+                return builder.create();
+            }
+        };
+
+        fightResult.show(getFragmentManager(), "fight result");
+
+    } // alert for end game
+
+
+
 
     //______________________________________________________________________________________________
 
