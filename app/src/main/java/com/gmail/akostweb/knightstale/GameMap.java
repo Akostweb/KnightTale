@@ -37,10 +37,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public static final int START_STATS_DEFAULT = 2;
     public static final int STATS_TO_PURCHASE = 10;
     public static final int OUTPOST = 1;
-    public static final int TAVERN = 2;
-    public static final int TOWER = 3;
-    public static final int FORTRESS = 4;
-    public static final int CASTLE = 5;
+    public static final int TAVERN = 6;
+    public static final int TOWER = 10;
+    public static final int FORTRESS = 12;
+    public static final int CASTLE = 15;
 
     boolean stopper;
     int step, timeToWait, stepLocation, counterArena;
@@ -556,7 +556,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             heroClass.setRoundCount(heroClass.getRoundCount() + 1);
             heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
 
-        } else if (heroClass.getStep() == 2) {
+        } else if (heroClass.getStep() == OUTPOST) {
 
             outpostFragment.show(getFragmentManager(), "outpostFragment");
             //houseAction(heroClass, outpost);
@@ -571,7 +571,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
 
-        } else if (heroClass.getStep() == 6) {
+        } else if (heroClass.getStep() == TAVERN) {
 
             houseAction(heroClass, tavern);
 
@@ -583,7 +583,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (heroClass.getStep() == 9) {
 
-        } else if (heroClass.getStep() == 10) {
+        } else if (heroClass.getStep() == TOWER) {
 
             houseAction(heroClass, tower);
 
@@ -591,7 +591,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
 
-        } else if (heroClass.getStep() == 12) {
+        } else if (heroClass.getStep() == FORTRESS) {
 
             houseAction(heroClass, fortress);
 
@@ -599,16 +599,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             stopper = false;
             arenaAction(heroClass);
 
-            if (!stopper) arenaAction(heroClass);
+            if (stopper) arenaAction(heroClass);
 
-            if (!stopper) arenaAction(heroClass);
+            if (stopper) arenaAction(heroClass);
 
 
         } else if (heroClass.getStep() == 14) {
 
             senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
 
-        } else if (heroClass.getStep() == 15) {
+        } else if (heroClass.getStep() == CASTLE) {
 
             houseAction(heroClass, castle);
 

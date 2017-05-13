@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Knights Tale</string>
     <string name="start">Start</string>
-    <string name="outpost">outpost on the river</string>
+    <string name="outpost">Outpost on the river</string>
     <string name="shop">Shop</string>
     <string name="tavern">Tavern "Small pony"</string>
     <string name="secretArea">Secret Area</string>

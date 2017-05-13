@@ -8,20 +8,19 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
 
-/**
- * Created by Администратор on 13.05.2017.
- */
-
 public class OutpostFragment extends DialogFragment implements OnClickListener {
 
     private static final String LOG_TAG = "goga";
 
+
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder adb = new AlertDialog.Builder(getActivity())
-                .setTitle("Title!").setPositiveButton(R.string.yes, this)
-                .setNegativeButton(R.string.no, this)
-                .setNeutralButton(R.string.maybe, this)
-                .setMessage(R.string.message_text);
+                .setTitle(R.string.outpost)
+                .setPositiveButton(R.string.buy_outpost, this)
+                .setNegativeButton(R.string.pay_pass, this)
+                .setNeutralButton(R.string.break_through, this)
+                .setMessage(R.string.location);
+
         return adb.create();
     }
 
