@@ -559,6 +559,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         } else if (heroClass.getStep() == OUTPOST) {
 
             outpostFragment.show(getFragmentManager(), "outpostFragment");
+
             //houseAction(heroClass, outpost);
 
         } else if (heroClass.getStep() == 3) {

@@ -3,10 +3,12 @@ package com.gmail.akostweb.knightstale;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 public class OutpostFragment extends DialogFragment implements OnClickListener {
 
@@ -53,5 +55,9 @@ public class OutpostFragment extends DialogFragment implements OnClickListener {
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         Log.d(LOG_TAG, "Dialog 2: onCancel");
+    }
+
+    public void connector(){
+        Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
     }
 }
