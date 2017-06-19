@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.01"
         android:background="@color/colorPrimaryDark"
+        android:baselineAligned="false"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Gold 100"
+                    android:text="@string/gold_top"
                     android:textSize="@dimen/small_text" />
 
             </LinearLayout>
@@ -52,7 +52,8 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="end"
                     android:layout_weight="1"
-                    android:background="@drawable/verysmall" />
+                    android:background="@drawable/verysmall"
+                    android:contentDescription="@string/image" />
 
                 <TextView
                     android:id="@+id/tvHP"
@@ -95,7 +96,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/verysmall" />
+                android:background="@drawable/verysmall"
+                android:contentDescription="@string/image" />
 
             <TextView
                 android:id="@+id/tvHP1"
@@ -129,13 +131,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/verysmall" />
+                android:background="@drawable/verysmall"
+                android:contentDescription="@string/image" />
 
             <TextView
                 android:id="@+id/tvHP2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:contentDescription="@string/image"
                 android:gravity="start"
                 android:text="@string/bot1"
                 android:textSize="@dimen/text_size" />
@@ -156,15 +160,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
+            android:layout_weight="0.5"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnShop"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/shop"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView12"
+                style="@style/TextViews"
+                android:text="@string/shop" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -174,33 +176,24 @@
 
                 <ImageView
                     android:id="@+id/iv41"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv42"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv43"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -211,15 +204,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
+            android:layout_weight="0.5"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnEasyMonster1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/easy_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView11"
+                style="@style/TextViews"
+                android:text="@string/easy_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -229,38 +220,28 @@
 
                 <ImageView
                     android:id="@+id/iv31"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv32"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv33"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
 
             </LinearLayout>
-
 
         </FrameLayout>
 
@@ -268,15 +249,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
-
-            <Button
-                android:id="@+id/btnBridge"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/outpost"
-                android:textSize="@dimen/text_size" />
+            android:layout_weight="0.5"
+            android:background="@drawable/button">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -286,36 +260,32 @@
 
                 <ImageView
                     android:id="@+id/iv21"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv22"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv23"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView10"
+                style="@style/TextViews"
+                android:text="@string/outpost" />
 
 
         </FrameLayout>
@@ -323,15 +293,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5">
-
-            <Button
-                android:id="@+id/btnStart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/start"
-                android:textSize="@dimen/text_size" />
+            android:layout_weight="0.5"
+            android:background="@drawable/button">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -341,36 +304,32 @@
 
                 <ImageView
                     android:id="@+id/iv11"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv12"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv13"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView9"
+                style="@style/TextViews"
+                android:text="@string/start" />
 
         </FrameLayout>
 
@@ -387,15 +346,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnAverageMonster1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/average_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView13"
+                style="@style/TextViews"
+                android:text="@string/average_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -405,33 +362,25 @@
 
                 <ImageView
                     android:id="@+id/iv51"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv52"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv53"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
+                    android:layout_marginRight="10dp"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -460,15 +409,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnStrongMonster2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/strong_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView24"
+                style="@style/TextViews"
+                android:text="@string/strong_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -478,33 +425,24 @@
 
                 <ImageView
                     android:id="@+id/iv161"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv162"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv163"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -523,15 +461,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnTavern"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/tavern"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView14"
+                style="@style/TextViews"
+                android:text="@string/tavern" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -541,33 +477,24 @@
 
                 <ImageView
                     android:id="@+id/iv61"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv62"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv63"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -592,15 +519,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnCastle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/castle"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView15"
+                style="@style/TextViews"
+                android:text="@string/castle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -610,33 +535,24 @@
 
                 <ImageView
                     android:id="@+id/iv151"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv152"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv153"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -656,15 +572,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnSecretArea"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/secretArea"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView16"
+                style="@style/TextViews"
+                android:text="@string/secretArea" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -674,33 +588,24 @@
 
                 <ImageView
                     android:id="@+id/iv71"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv72"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv73"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -713,20 +618,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.6777"
+            android:background="@color/Black"
             android:baselineAligned="false" />
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnAverageMonster2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/average_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView17"
+                style="@style/TextViews"
+                android:text="@string/average_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -737,33 +641,24 @@
 
                 <ImageView
                     android:id="@+id/iv141"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv142"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv143"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -784,15 +679,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnEasyMonster2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/easy_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView18"
+                style="@style/TextViews"
+                android:text="@string/easy_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -802,33 +695,24 @@
 
                 <ImageView
                     android:id="@+id/iv81"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv82"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv83"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -847,53 +731,59 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Level Up!" />
+                android:text="@string/level_up" />
 
             <LinearLayout
+                android:id="@+id/llLevel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/llLevel">
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btnLvlPlusVit"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/layout_height"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+
+                    android:onClick="OnClick"
                     android:text="@string/vitalityUp"
-                    android:textSize="@dimen/very_small_text"
-                    android:onClick="OnClick"/>
+                    android:textSize="@dimen/very_small_text" />
 
                 <Button
                     android:id="@+id/btnLvlPlusStrength"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/layout_height"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:onClick="OnClick"
                     android:text="@string/strengthUp"
-                    android:textSize="@dimen/very_small_text"
-                    android:onClick="OnClick"/>
+                    android:textSize="@dimen/very_small_text" />
 
                 <Button
                     android:id="@+id/btnLvlPlusAgility"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/layout_height"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:onClick="OnClick"
                     android:text="@string/agilityUp"
-                    android:textSize="@dimen/very_small_text"
-                    android:onClick="OnClick"/>
+                    android:textSize="@dimen/very_small_text" />
 
                 <Button
                     android:id="@+id/btnLvlPlusFocus"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
+
                     android:layout_height="@dimen/layout_height"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:onClick="OnClick"
                     android:text="@string/focusUp"
-                    android:textSize="@dimen/very_small_text"
-                    android:onClick="OnClick"/>
+                    android:textSize="@dimen/very_small_text" />
 
             </LinearLayout>
 
@@ -903,15 +793,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnArena"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/arena"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView19"
+                style="@style/TextViews"
+                android:text="@string/arena" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -921,33 +809,24 @@
 
                 <ImageView
                     android:id="@+id/iv131"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv132"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv133"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -966,15 +845,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnJail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/jail"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView20"
+                style="@style/TextViews"
+                android:text="@string/jail" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -984,33 +861,24 @@
 
                 <ImageView
                     android:id="@+id/iv91"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv92"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv93"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -1021,15 +889,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnTower"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/tower"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView21"
+                style="@style/TextViews"
+                android:text="@string/tower" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -1039,33 +905,24 @@
 
                 <ImageView
                     android:id="@+id/iv101"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv102"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv103"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -1077,15 +934,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnStrongMonster1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/strong_monster"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView22"
+                style="@style/TextViews"
+                android:text="@string/strong_monster" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -1095,33 +950,24 @@
 
                 <ImageView
                     android:id="@+id/iv111"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv112"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv113"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>
@@ -1132,15 +978,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/button">
 
-            <Button
-                android:id="@+id/btnFortress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/button"
-                android:text="@string/fortress"
-                android:textSize="@dimen/text_size" />
+            <TextView
+                android:id="@+id/textView23"
+                style="@style/TextViews"
+                android:text="@string/fortress" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -1150,33 +994,24 @@
 
                 <ImageView
                     android:id="@+id/iv121"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv122"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="@dimen/statue"
                     android:layout_marginRight="@dimen/statue"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
                 <ImageView
                     android:id="@+id/iv123"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    style="@style/wooden"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/transparent"
                     android:contentDescription="@string/image" />
 
             </LinearLayout>

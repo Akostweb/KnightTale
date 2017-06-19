@@ -1,22 +1,28 @@
 <resources>
+
+    <string name="level_up">Level up!</string>
+    <string name="gold_top">Gold 100</string>
     <string name="app_name">Knights Tale</string>
+    <string name="hp_bar">%1$S/%2$S</string>
+    <string name="location">You came to the .............</string>
+    <string name="roll_cube">Roll a cube</string>
+    <string name="back_to_map">Back to map!</string>
+    <string name="game_over">Game Over</string>
+    <string name="title_over">Your life ends here.</string>
+    <string name="experience">Exp %1$S/%2$S</string>
+
+    <!--Create hero text-->
+    <string name="continue_game">Continue</string>
     <string name="start">Start</string>
-    <string name="outpost">Outpost on the river</string>
-    <string name="shop">Shop</string>
-    <string name="tavern">Tavern "Small pony"</string>
-    <string name="secretArea">Secret Area</string>
-    <string name="jail">Jail</string>
-    <string name="tower">Eagle tower</string>
-    <string name="fortress">Fortress</string>
-    <string name="arena">Arena</string>
-    <string name="castle">Castle "Black Stone"</string>
+    <string name="exit">exit</string>
+    <string name="options">options</string>
+    <string name="faq">FAQ</string>
+
+    <!--Create hero text-->
     <string name="player1">Player1</string>
     <string name="bot1">Bot1</string>
     <string name="bot2">Bot2</string>
     <string name="image">image</string>
-    <string name="exit">exit</string>
-    <string name="options">options</string>
-    <string name="faq">FAQ</string>
     <string name="begin_adventure">Begin adventure</string>
     <string name="name">Input name of your hero:</string>
     <string name="name_toast">Input name of your hero</string>
@@ -36,25 +42,35 @@
     <string name="bot_name">Input bot name:</string>
     <string name="no_free_stats">No free stats</string>
     <string name="stats_limit">Stat`s can`t be less then 2</string>
-    <string name="continue_game">Continue</string>
-    <string name="hp_bar">%1$S/%2$S</string>
-    <string name="location">You came to the .............</string>
+
+    <!--Text action for houses-->
+    <string name="your_house">This is your house</string>
     <string name="action1">Run</string>
     <string name="action2">Fight</string>
     <string name="action3">Pay to pass</string>
-    <string name="roll_cube">Roll a cube</string>
-    <string name="back_to_map">Back to map!</string>
-    <string name="game_over">Game Over</string>
-    <string name="title_over">Your life ends here.</string>
     <string name="buy_outpost">Buy (20 gold)</string>
+    <string name="buy_tavern">Buy (27 gold)</string>
+    <string name="buy_eagle">Buy (35 gold)</string>
+    <string name="buy_fortress">Buy (42 gold)</string>
+    <string name="buy_castle">Buy (50 gold)</string>
     <string name="no_money">Not enough gold</string>
-    <string name="your_house">This is your house</string>
     <string name="action_buy">Buy this place for %1$S</string>
     <string name="at_home">You at home sir %1$S , wellcome back! Take a rest!</string>
     <string name="what_house">You see %1$s and you go in</string>
     <string name="path">Your way has brought somewhere</string>
-    <string name="experience">Exp %1$S/%2$S</string>
 
+    <!--Houses-->
+    <string name="tavern">Tavern "Small pony"</string>
+    <string name="outpost">Outpost on the river</string>
+    <string name="shop">Shop</string>
+    <string name="secretArea">Secret Area</string>
+    <string name="jail">Jail</string>
+    <string name="tower">Eagle tower</string>
+    <string name="fortress">Fortress</string>
+    <string name="arena">Arena</string>
+    <string name="castle">Castle "Black Stone"</string>
+
+    <!--Test-->
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="maybe">maybe</string>

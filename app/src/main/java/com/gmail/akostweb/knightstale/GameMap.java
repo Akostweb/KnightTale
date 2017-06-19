@@ -34,9 +34,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public static final int FOCUS_BONUS = 9;
     public static final int AGILITY_BONUS = 6;
     public static final int ZERO = 0;
-    public static final int START_STATS_DEFAULT = 2;
+    public static final int START_STATS_DEFAULT = 20;
     public static final int STATS_TO_PURCHASE = 10;
-    public static final int OUTPOST = 1;
+    public static final int OUTPOST = 2;
     public static final int TAVERN = 6;
     public static final int TOWER = 10;
     public static final int FORTRESS = 12;
@@ -45,7 +45,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     boolean stopper;
     int step, timeToWait, stepLocation, counterArena;
 
-    int outpostAnswer;
+    int outpostAnswer, tavernAnswer, eagleAnswer, fortressAnswer, castleAnswer;
 
     int ownerOutpost, ownerTavern, ownerTower, ownerFortress, ownerCastle;
 
@@ -103,7 +103,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     int hpBeforeFight, hpMaxBeforeFight;
     int maxExperience, experience, lvl;
 
-    DialogFragment outpostFragment;
+    DialogFragment outpostFragment, tavernFragment, eagleFragment, fortressFragment, castleFragment;
 
     private String[] nameArray = {"Asshole", "Cock", "Dick", "Tits", "Bobby", "Hump", "Bravo", "super", "black", "gammy"};
 
@@ -121,6 +121,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
         outpostFragment = new OutpostFragment();
+        tavernFragment = new TavernFragment();
+        eagleFragment = new EagleFragment();
+        fortressFragment = new FortressFragment();
+        castleFragment = new CastleFragment();
 
         //all step dots
 
@@ -247,6 +251,25 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     public void saveOutpostAnswer (int i){
         outpostAnswer = i;
+        Toast.makeText(this, "answer " + outpostAnswer, Toast.LENGTH_LONG).show();
+    }
+
+    public void saveTavernAnswer(int i){
+        tavernAnswer = i;
+        Toast.makeText(this, "answer " + tavernAnswer, Toast.LENGTH_LONG).show();
+    }
+
+    public void saveEagleAnswer(int i){
+        eagleAnswer = i;
+        Toast.makeText(this, "answer " + eagleAnswer, Toast.LENGTH_LONG).show();
+    }
+    public void saveFortressAnswer(int i){
+        fortressAnswer = i;
+        Toast.makeText(this, "answer " + fortressAnswer, Toast.LENGTH_LONG).show();
+    }
+    public void saveCastleAnswer(int i){
+        castleAnswer = i;
+        Toast.makeText(this, "answer " + castleAnswer, Toast.LENGTH_LONG).show();
     }
 
     // FUTURE THINGS EXPIERENCE AND LEVEL UP TO one of your stats
@@ -557,24 +580,35 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
 
         } else if (heroClass.getStep() == OUTPOST) {
+            arenaAction(heroClass);
 
-            outpostFragment.show(getFragmentManager(), "outpostFragment");
-
-            //houseAction(heroClass, outpost);
+//            outpostFragment.show(getFragmentManager(), "outpostFragment");
+//            answer(outpostAnswer , heroClass, outpost);
+//            Toast.makeText(this, "U make make your choice = " + outpostAnswer, Toast.LENGTH_LONG).show();
+//
+//            //houseAction(heroClass, outpost);
 
         } else if (heroClass.getStep() == 3) {
 
-            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+//            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+            arenaAction(heroClass);
+
 
         } else if (heroClass.getStep() == 4) {
 
         } else if (heroClass.getStep() == 5) {
 
-            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+            //senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+            arenaAction(heroClass);
 
         } else if (heroClass.getStep() == TAVERN) {
 
-            houseAction(heroClass, tavern);
+            tavernFragment.show(getFragmentManager(), "tavernFragment");
+            Toast.makeText(this, "U make make your choice = " + tavernAnswer, Toast.LENGTH_LONG).show();
+            answer(tavernAnswer , heroClass, tavern);
+
+
+            //houseAction(heroClass, tavern);
 
         } else if (heroClass.getStep() == 7) {
 
@@ -586,7 +620,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (heroClass.getStep() == TOWER) {
 
-            houseAction(heroClass, tower);
+
+            eagleFragment.show(getFragmentManager(), "tavernFragment");
+            eagleFragment.dismiss();
+            answer(eagleAnswer , heroClass, tower);
+            Toast.makeText(this, "U make make your choice = " + eagleAnswer, Toast.LENGTH_LONG).show();
+
+            //houseAction(heroClass, tower);
 
         } else if (heroClass.getStep() == 11) {
 
@@ -594,7 +634,12 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (heroClass.getStep() == FORTRESS) {
 
-            houseAction(heroClass, fortress);
+            fortressFragment.show(getFragmentManager(), "fortressFragment");
+
+            answer(fortressAnswer , heroClass, fortress);
+            Toast.makeText(this, "U make make your choice = " + fortressAnswer, Toast.LENGTH_LONG).show();
+
+            //houseAction(heroClass, fortress);
 
         } else if (heroClass.getStep() == 13) {
             stopper = false;
@@ -604,14 +649,19 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             if (stopper) arenaAction(heroClass);
 
+            Toast.makeText(this, " bitva budet", Toast.LENGTH_SHORT).show();
+
 
         } else if (heroClass.getStep() == 14) {
 
             senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
 
         } else if (heroClass.getStep() == CASTLE) {
+            castleFragment.show(getFragmentManager(), "castleFragment");
+            answer(castleAnswer , heroClass, castle);
+            Toast.makeText(this, "U make make your choice = " + castleAnswer, Toast.LENGTH_LONG).show();
 
-            houseAction(heroClass, castle);
+           // houseAction(heroClass, castle);
 
         } else if (heroClass.getStep() == 16) {
 
@@ -655,70 +705,95 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     // taking on HouseClass (can be fighting too)
 
-    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
-
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                builder.setMessage(getResources().getString(R.string.what_house, houseClass.getName()));
-                builder.setTitle(getResources().getString(R.string.path));
-                builder.setIcon(R.drawable.tavernalert);
-
-                if (houseClass.getOwner() == 0) {
-                    builder.setPositiveButton(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    buttonBuy(heroClass, houseClass);
-                                }
-                            });
-
-                }
-
-
-                if (houseClass.getOwner() == 1) {
-                    builder.setPositiveButton(getResources().getString(R.string.at_home, heroClass.getName()),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
-                                    if (heroClass.getHp() > hpMaxBeforeFight)
-                                        heroClass.setHp(hpMaxBeforeFight);
-                                    tvHp.setText(getResources().getString(R.string.hp_bar,
-                                            String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-
-                                }
-                            });
-
-                } else {
-                    builder.setNeutralButton(R.string.pay_pass,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    buttonPayPass(heroClass, houseClass);
-
-                                }
-                            });
-
-                    builder.setNegativeButton(R.string.break_through,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
-                                }
-                            });
-
-                }
-
-
-                return builder.create();
+    public void answer(int i, HeroClass heroClass, HouseClass houseClass) {
+        if (i == 1){
+            if (houseClass.getOwner() == 0){
+                buttonBuy(heroClass, houseClass);
+            } else {
+                heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                if (heroClass.getHp() > hpMaxBeforeFight)
+                    heroClass.setHp(hpMaxBeforeFight);
+                tvHp.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
             }
-        };
-        fightResult.show(getFragmentManager(), "fight result");
+
+        } else if (i == 2){
+
+            buttonPayPass(heroClass, houseClass);
+
+        } else if (i == 3){
+
+            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
+
+        }
+
     }
+
+//    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
+//
+//        @SuppressLint("ValidFragment") final
+//        DialogFragment fightResult = new DialogFragment() {
+//            @Override
+//            public Dialog onCreateDialog(Bundle savedInstanceState) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                setCancelable(false);
+//                builder.setMessage(getResources().getString(R.string.what_house, houseClass.getName()));
+//                builder.setTitle(getResources().getString(R.string.path));
+//                builder.setIcon(R.drawable.tavernalert);
+//
+//                if (houseClass.getOwner() == 0) {
+//                    builder.setPositiveButton(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())),
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    buttonBuy(heroClass, houseClass);
+//                                }
+//                            });
+//
+//                }
+//
+//
+//                if (houseClass.getOwner() == 1) {
+//                    builder.setPositiveButton(getResources().getString(R.string.at_home, heroClass.getName()),
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+//                                    if (heroClass.getHp() > hpMaxBeforeFight)
+//                                        heroClass.setHp(hpMaxBeforeFight);
+//                                    tvHp.setText(getResources().getString(R.string.hp_bar,
+//                                            String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+//
+//                                }
+//                            });
+//
+//                } else {
+//                    builder.setNeutralButton(R.string.pay_pass,
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    buttonPayPass(heroClass, houseClass);
+//                                    //buttonPayPass(heroClass,houseClass);
+//
+//                                }
+//                            });
+//
+//                    builder.setNegativeButton(R.string.break_through,
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
+//                                }
+//                            });
+//
+//                }
+//
+//
+//                return builder.create();
+//            }
+//        };
+//        fightResult.show(getFragmentManager(), "fight result");
+//    }
 
     public void buttonBuy(HeroClass heroClass, HouseClass houseClass) {
 
@@ -761,11 +836,12 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 //View view = getActivity().getLayoutInflater().inflate(R.layout.arena_activity, null);
-                //builder.setView(view);
-                setCancelable(false);
-                builder.setMessage(getResources().getString(R.string.arena_message));
-                builder.setTitle(getResources().getString(R.string.arena_title));
+                builder.setView(R.layout.arena2);
+
+                //builder.setMessage(getResources().getString(R.string.arena_message));
+                //builder.setTitle(getResources().getString(R.string.arena_title));
                 builder.setIcon(R.drawable.arena);
+                builder.setCancelable(false);
 
 
                 builder.setPositiveButton(getResources().getString(R.string.stop_fight),
@@ -777,7 +853,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                                 dismiss();
                             }
                         });
-
 
                 builder.setNeutralButton(getResources().getString(R.string.average_monster),
                         new DialogInterface.OnClickListener() {
