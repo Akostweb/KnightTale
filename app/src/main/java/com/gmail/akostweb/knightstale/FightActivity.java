@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -53,6 +54,8 @@ public class FightActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fight_activity);
+
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         tvFightHP1 = (TextView) findViewById(R.id.tvFightHp1);
         tvFightHP2 = (TextView) findViewById(R.id.tvFightHp2);

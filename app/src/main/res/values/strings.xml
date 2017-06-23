@@ -11,6 +11,23 @@
     <string name="title_over">Your life ends here.</string>
     <string name="experience">Exp %1$S/%2$S</string>
 
+    <!--secret area-->
+    <string name="secret_title">You came to the strange place. You try to describe your feeling…</string>
+    <string name="secret_info">The epicenter of the outgoing force is near the stone under the
+        destroyed window. Maybe it is a gravestone. You think that you should touch the stone, maybe it will
+        help me to decide on the action.</string>
+    <string name="secret_btn">You decided to touch the stone</string>
+    <string name="secretExit_btn">You don`t want to risk</string>
+    <string name="choice">You make your choice</string>
+
+
+    <!--jail info-->
+    <string name="jain_info">You are in jail now. This world is not fair.</string>
+    <string name="jail_action">You do not have time to prove your innocence. Only luck will help
+        you escape from prison(To roll a cube to six), for one move you can roll a cube three times.
+        If you fail, you will loose some hp. You might be here till death. So Odin be supportive
+        to you today</string>
+
     <!--Create hero text-->
     <string name="continue_game">Continue</string>
     <string name="start">Start</string>
@@ -31,7 +48,7 @@
     <string name="strength">Strength: </string>
     <string name="agility">Agility: </string>
     <string name="focus">Focus: </string>
-    <string name="default_stat">2</string>
+    <string name="default_stat">20</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="set_start">Stats distributed and ready to fight</string>
@@ -45,7 +62,7 @@
 
     <!--Text action for houses-->
     <string name="your_house">This is your house</string>
-    <string name="action1">Run</string>
+    <string name="action1">Runaway</string>
     <string name="action2">Fight</string>
     <string name="action3">Pay to pass</string>
     <string name="buy_outpost">Buy (20 gold)</string>
@@ -58,6 +75,14 @@
     <string name="at_home">You at home sir %1$S , wellcome back! Take a rest!</string>
     <string name="what_house">You see %1$s and you go in</string>
     <string name="path">Your way has brought somewhere</string>
+
+    <!--SHOP-->
+    <string name="shop_text">Hello adventurer, i can sell you some magic potion for 50 gold. Each time you came, you can bought one potion per round. Bless you with beard of almighty Merlin</string>
+    <string name="shop_magic">Shop magic</string>
+    <string name="vitality_potion">Gain vitality +</string>
+    <string name="strength_potion">Gain strength +</string>
+    <string name="agility_potion">Gain agility +</string>
+    <string name="focus_potion">Gain focus +</string>
 
     <!--Houses-->
     <string name="tavern">Tavern "Small pony"</string>
@@ -77,8 +102,10 @@
     <string name="message_text">Outpost</string>
 
     <!--Arena-->
-    <string name="arena_message">You hear a roars <sq></sq>and furious cries. No doubt, this is an arena. Where brave warriors can get rich or meet their death with honor</string>
-    <string name="arena_title">Famous place with1 a lot of people. You can fight with strongest enemy and take huge amount of money</string>
+    <string name="arena_message">You hear a roars and furious cries. No doubt, this is an arena.
+        Where brave warriors can get rich or meet their death with honor</string>
+    <string name="arena_title">Famous place with1 a lot of people. You can fight with strongest
+        enemy and take huge amount of money</string>
     <string name="stop_fight">You decided to go elsewhere</string>
     <string name="average_monster">Average enemy</string>
     <string name="strong_monster">Strong enemy</string>

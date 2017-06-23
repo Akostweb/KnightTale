@@ -5,19 +5,47 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
 
 public class GameMap extends AppCompatActivity implements DialogInterface.OnClickListener {
+
+    final public static String OUTPOST_NAME = "Outpost on a river";
+    final public static String TAVERN_NAME = "Taver 'Small pony'";
+    final public static String TOWER_NAME = "Eagle tower";
+    final public static String FORTRESS_NAME = "Fortress of free people";
+    final public static String CASTLE_NAME = "Castle black stone";
+    final public static int OWNER_NULL = 0;
+    final public static int OWNER_PLAYER = 1;
+
+    final public static int OUTPOST_COST = 20;
+    final public static int TAVERN_COST = 27;
+    final public static int TOWER_COST = 32;
+    final public static int FORTRESS_COST = 42;
+    final public static int CASTLE_COST = 50;
+
+    final public static int OUTPOST_PAY_PASS = 3;
+    final public static int TAVERN_PAY_PASS = 5;
+    final public static int TOWER_PAY_PASS = 7;
+    final public static int FORTRESS_PAY_PASS = 10;
+    final public static int CASTLE_PAY_PASS = 15;
+
+    final public static int DAMAGE_JAIL = 250;
+    final public static int ALL_ATTEMPTS = 3;
+
+    final public static int POTION_COST = 50;
 
     final public static int STEP_MAX = 16;
     final public static int MONSTER_EASY = 1;
@@ -42,10 +70,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public static final int FORTRESS = 12;
     public static final int CASTLE = 15;
 
-    boolean stopper;
-    int step, timeToWait, stepLocation, counterArena;
-
-    int outpostAnswer, tavernAnswer, eagleAnswer, fortressAnswer, castleAnswer;
+    int attempts;
+    boolean stopper, jailChecker;
+    int step, timeToWait, stepLocation;
 
     int ownerOutpost, ownerTavern, ownerTower, ownerFortress, ownerCastle;
 
@@ -103,14 +130,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     int hpBeforeFight, hpMaxBeforeFight;
     int maxExperience, experience, lvl;
 
-    DialogFragment outpostFragment, tavernFragment, eagleFragment, fortressFragment, castleFragment;
-
     private String[] nameArray = {"Asshole", "Cock", "Dick", "Tits", "Bobby", "Hump", "Bravo", "super", "black", "gammy"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //container = (FrameLayout) findViewById(R.id.container);
 
@@ -119,12 +145,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         btnLvlPlusAgility = (Button) findViewById(R.id.btnLvlPlusAgility);
         btnLvlPlusFocus = (Button) findViewById(R.id.btnLvlPlusFocus);
 
-
-        outpostFragment = new OutpostFragment();
-        tavernFragment = new TavernFragment();
-        eagleFragment = new EagleFragment();
-        fortressFragment = new FortressFragment();
-        castleFragment = new CastleFragment();
 
         //all step dots
 
@@ -210,19 +230,19 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         //__________________________________________________________________________________________
 
 
-        final HouseClass outpost = new HouseClass(0, 20, 3, "outpost across a river");
+        final HouseClass outpost = new HouseClass(OWNER_NULL, OUTPOST_COST, OUTPOST_PAY_PASS, OUTPOST_NAME);
         ownerOutpost = outpost.getOwner();
 
-        final HouseClass tavern = new HouseClass(0, 27, 5, "tavern 'Small pony'");
+        final HouseClass tavern = new HouseClass(OWNER_NULL, TAVERN_COST, TAVERN_PAY_PASS, TAVERN_NAME);
         ownerTavern = tavern.getOwner();
 
-        final HouseClass tower = new HouseClass(0, 35, 7, "eagle tower");
+        final HouseClass tower = new HouseClass(OWNER_NULL, TOWER_COST, TOWER_PAY_PASS, TOWER_NAME);
         ownerTower = tower.getOwner();
 
-        final HouseClass fortress = new HouseClass(0, 42, 10, "fortress of free people");
+        final HouseClass fortress = new HouseClass(OWNER_NULL, FORTRESS_COST, FORTRESS_PAY_PASS, FORTRESS_NAME);
         ownerFortress = fortress.getOwner();
 
-        final HouseClass castle = new HouseClass(0, 50, 15, "castle of the knights");
+        final HouseClass castle = new HouseClass(OWNER_NULL, CASTLE_COST, CASTLE_PAY_PASS, CASTLE_NAME);
         ownerCastle = castle.getOwner();
 
         ivDice = (Button) findViewById(R.id.ivDice);
@@ -230,46 +250,24 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         ivDice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Handler handler = new Handler();
-                randomAnimation();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
+                if (jailChecker) {
+                    jailAction(player);
+                } else {
+                    Handler handler = new Handler();
+                    randomAnimation(ivDice);
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
 
-                        stepController(player, step);
+                            stepController(player, step);
 
-                        stepAction(player, outpost, tavern, tower, fortress, castle);
+                            stepAction(player, outpost, tavern, tower, fortress, castle);
 
-                        player.setHp(hpBeforeFight);
-                    }
-                }, timeToWait);
+                            player.setHp(hpBeforeFight);
+                        }
+                    }, timeToWait);
+                }
             }
         });
-    }
-
-
-
-
-    public void saveOutpostAnswer (int i){
-        outpostAnswer = i;
-        Toast.makeText(this, "answer " + outpostAnswer, Toast.LENGTH_LONG).show();
-    }
-
-    public void saveTavernAnswer(int i){
-        tavernAnswer = i;
-        Toast.makeText(this, "answer " + tavernAnswer, Toast.LENGTH_LONG).show();
-    }
-
-    public void saveEagleAnswer(int i){
-        eagleAnswer = i;
-        Toast.makeText(this, "answer " + eagleAnswer, Toast.LENGTH_LONG).show();
-    }
-    public void saveFortressAnswer(int i){
-        fortressAnswer = i;
-        Toast.makeText(this, "answer " + fortressAnswer, Toast.LENGTH_LONG).show();
-    }
-    public void saveCastleAnswer(int i){
-        castleAnswer = i;
-        Toast.makeText(this, "answer " + castleAnswer, Toast.LENGTH_LONG).show();
     }
 
     // FUTURE THINGS EXPIERENCE AND LEVEL UP TO one of your stats
@@ -330,7 +328,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     //______________________________________________________________________________________________
 
     //Animation of dice
-    public void randomAnimation() {
+
+
+    public void randomAnimation(final Button btn) {
 
         final int count = randomDiceCount();
 
@@ -339,7 +339,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         final Runnable updateDice = new Runnable() {
             @Override
             public void run() {
-                step = randomKubThreadLast();
+                step = randomKubThreadLast(btn);
+
             }
         };
 
@@ -370,32 +371,34 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     } // method that gives back number that how many time it will dice
 
-    public int randomKubThreadLast() {
+    public int randomKubThreadLast(Button btn) {
         int min = 1;
         int max = 6;
         Random random = new Random();
         int randomDice = random.nextInt(max - min + 1) + min;
-        image(randomDice);
+        image(randomDice, btn);
+
         return randomDice;
 
     } //return number of dice or just change picture
 
-    public void image(int random) {
+
+    public void image(int random, Button btn) {
         if (random == 1) {
-            ivDice.setBackgroundResource(R.drawable.aone);
+            btn.setBackgroundResource(R.drawable.aone);
         } else if (random == 2) {
-            ivDice.setBackgroundResource(R.drawable.atwo);
+            btn.setBackgroundResource(R.drawable.atwo);
         } else if (random == 3) {
-            ivDice.setBackgroundResource(R.drawable.athree);
+            btn.setBackgroundResource(R.drawable.athree);
         } else if (random == 4) {
-            ivDice.setBackgroundResource(R.drawable.afour);
+            btn.setBackgroundResource(R.drawable.afour);
         } else if (random == 5) {
-            ivDice.setBackgroundResource(R.drawable.afive);
+            btn.setBackgroundResource(R.drawable.afive);
         } else if (random == 6) {
-            ivDice.setBackgroundResource(R.drawable.asix);
+            btn.setBackgroundResource(R.drawable.asix);
         }
 
-    } // just show needed picture
+    }
     //______________________________________________________________________________________________
 
     //Creates bots (bot1 or bot2)
@@ -427,7 +430,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         bot.setCrit(bot.focus * FOCUS_BONUS);
         bot.setEvasion(bot.agility * AGILITY_BONUS);
         bot.setStep(1);
-        bot.setRoundCount(0);
         bot.setRoundCount(0);
         bot.setGold(200);
         bot.setExp(0);
@@ -580,53 +582,39 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
 
         } else if (heroClass.getStep() == OUTPOST) {
-            arenaAction(heroClass);
 
-//            outpostFragment.show(getFragmentManager(), "outpostFragment");
-//            answer(outpostAnswer , heroClass, outpost);
-//            Toast.makeText(this, "U make make your choice = " + outpostAnswer, Toast.LENGTH_LONG).show();
-//
-//            //houseAction(heroClass, outpost);
+            houseAction(heroClass, outpost);
 
         } else if (heroClass.getStep() == 3) {
 
-//            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
-            arenaAction(heroClass);
+            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
 
 
         } else if (heroClass.getStep() == 4) {
+            magicShop(heroClass);
 
         } else if (heroClass.getStep() == 5) {
 
-            //senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
-            arenaAction(heroClass);
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
 
         } else if (heroClass.getStep() == TAVERN) {
 
-            tavernFragment.show(getFragmentManager(), "tavernFragment");
-            Toast.makeText(this, "U make make your choice = " + tavernAnswer, Toast.LENGTH_LONG).show();
-            answer(tavernAnswer , heroClass, tavern);
-
-
-            //houseAction(heroClass, tavern);
+            houseAction(heroClass, tavern);
 
         } else if (heroClass.getStep() == 7) {
+
+           secretAreaAction(heroClass);
 
         } else if (heroClass.getStep() == 8) {
 
             senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
 
         } else if (heroClass.getStep() == 9) {
+            jailAction(heroClass);
 
         } else if (heroClass.getStep() == TOWER) {
 
-
-            eagleFragment.show(getFragmentManager(), "tavernFragment");
-            eagleFragment.dismiss();
-            answer(eagleAnswer , heroClass, tower);
-            Toast.makeText(this, "U make make your choice = " + eagleAnswer, Toast.LENGTH_LONG).show();
-
-            //houseAction(heroClass, tower);
+            houseAction(heroClass, tower);
 
         } else if (heroClass.getStep() == 11) {
 
@@ -634,12 +622,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (heroClass.getStep() == FORTRESS) {
 
-            fortressFragment.show(getFragmentManager(), "fortressFragment");
-
-            answer(fortressAnswer , heroClass, fortress);
-            Toast.makeText(this, "U make make your choice = " + fortressAnswer, Toast.LENGTH_LONG).show();
-
-            //houseAction(heroClass, fortress);
+            houseAction(heroClass, fortress);
 
         } else if (heroClass.getStep() == 13) {
             stopper = false;
@@ -657,11 +640,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
 
         } else if (heroClass.getStep() == CASTLE) {
-            castleFragment.show(getFragmentManager(), "castleFragment");
-            answer(castleAnswer , heroClass, castle);
-            Toast.makeText(this, "U make make your choice = " + castleAnswer, Toast.LENGTH_LONG).show();
 
-           // houseAction(heroClass, castle);
+            houseAction(heroClass, castle);
 
         } else if (heroClass.getStep() == 16) {
 
@@ -705,96 +685,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     // taking on HouseClass (can be fighting too)
 
-    public void answer(int i, HeroClass heroClass, HouseClass houseClass) {
-        if (i == 1){
-            if (houseClass.getOwner() == 0){
-                buttonBuy(heroClass, houseClass);
-            } else {
-                heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
-                if (heroClass.getHp() > hpMaxBeforeFight)
-                    heroClass.setHp(hpMaxBeforeFight);
-                tvHp.setText(getResources().getString(R.string.hp_bar,
-                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-            }
-
-        } else if (i == 2){
-
-            buttonPayPass(heroClass, houseClass);
-
-        } else if (i == 3){
-
-            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
-
-        }
-
-    }
-
-//    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
-//
-//        @SuppressLint("ValidFragment") final
-//        DialogFragment fightResult = new DialogFragment() {
-//            @Override
-//            public Dialog onCreateDialog(Bundle savedInstanceState) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                setCancelable(false);
-//                builder.setMessage(getResources().getString(R.string.what_house, houseClass.getName()));
-//                builder.setTitle(getResources().getString(R.string.path));
-//                builder.setIcon(R.drawable.tavernalert);
-//
-//                if (houseClass.getOwner() == 0) {
-//                    builder.setPositiveButton(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())),
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    buttonBuy(heroClass, houseClass);
-//                                }
-//                            });
-//
-//                }
-//
-//
-//                if (houseClass.getOwner() == 1) {
-//                    builder.setPositiveButton(getResources().getString(R.string.at_home, heroClass.getName()),
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
-//                                    if (heroClass.getHp() > hpMaxBeforeFight)
-//                                        heroClass.setHp(hpMaxBeforeFight);
-//                                    tvHp.setText(getResources().getString(R.string.hp_bar,
-//                                            String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-//
-//                                }
-//                            });
-//
-//                } else {
-//                    builder.setNeutralButton(R.string.pay_pass,
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    buttonPayPass(heroClass, houseClass);
-//                                    //buttonPayPass(heroClass,houseClass);
-//
-//                                }
-//                            });
-//
-//                    builder.setNegativeButton(R.string.break_through,
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialogInterface, int i) {
-//                                    senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
-//                                }
-//                            });
-//
-//                }
-//
-//
-//                return builder.create();
-//            }
-//        };
-//        fightResult.show(getFragmentManager(), "fight result");
-//    }
-
     public void buttonBuy(HeroClass heroClass, HouseClass houseClass) {
 
         if (houseClass.getOwner() == 0) {
@@ -828,6 +718,188 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     // SenderStats here
 
+    public void magicShop(final HeroClass heroClass) {
+        @SuppressLint("ValidFragment") final
+        DialogFragment shop = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.shop_layout, null);
+                builder.setView(view);
+                builder.setCancelable(true);
+
+                Button btnStrength = (Button) view.findViewById(R.id.btnStrength);
+                Button btnVitality = (Button) view.findViewById(R.id.btnVitality);
+                Button btnAgility = (Button) view.findViewById(R.id.btnAgility);
+                Button btnFocus = (Button) view.findViewById(R.id.btnFocus);
+
+                btnStrength.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setStrength(heroClass.getStrength() + 1);
+                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                        tvHp.setText(getResources().getString(R.string.hp_bar,
+                                String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getStrength()), Toast.LENGTH_LONG).show();
+                        heroClass.setGold(heroClass.getGold() - POTION_COST);
+                        dismiss();
+
+                    }
+                });
+
+                btnVitality.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setVitality(heroClass.getVitality() + 1);
+                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                        tvHp.setText(getResources().getString(R.string.hp_bar,
+                                String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getVitality()), Toast.LENGTH_LONG).show();
+                        heroClass.setGold(heroClass.getGold() - POTION_COST);
+
+                        dismiss();
+                    }
+                });
+
+                btnAgility.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setAgility(heroClass.getAgility() + 1);
+                        heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getAgility()), Toast.LENGTH_LONG).show();
+                        heroClass.setGold(heroClass.getGold() - POTION_COST);
+                        dismiss();
+                    }
+                });
+
+                btnFocus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setFocus(heroClass.getFocus() + 1);
+                        heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getFocus()), Toast.LENGTH_LONG).show();
+                        heroClass.setGold(heroClass.getGold() - POTION_COST);
+                        dismiss();
+                    }
+                });
+
+
+                return builder.create();
+
+            }
+
+
+        };
+        shop.show(getFragmentManager(), "fight result");
+
+    }
+
+
+    public void houseAction(final HeroClass heroClass, final HouseClass houseClass) {
+        @SuppressLint("ValidFragment") final
+        DialogFragment fightResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.outpost_layout, null);
+                builder.setView(view);
+                builder.setCancelable(true);
+
+                LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.mainLayout);
+                switch (houseClass.getName()) {
+                    case OUTPOST_NAME:
+                        linearLayout.setBackgroundResource(R.drawable.outpost);
+                        break;
+                    case TAVERN_NAME:
+                        linearLayout.setBackgroundResource(R.drawable.tavernalert);
+                        break;
+                    case TOWER_NAME:
+                        linearLayout.setBackgroundResource(R.drawable.tower);
+                        break;
+                    case FORTRESS_NAME:
+                        linearLayout.setBackgroundResource(R.drawable.fortress);
+                        break;
+                    default:
+                        linearLayout.setBackgroundResource(R.drawable.castle);
+                        break;
+                }
+
+
+                TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+                tvTitle.setText(getResources().getString(R.string.path));
+
+                TextView tvText = (TextView) view.findViewById(R.id.tvText);
+                tvText.setText(getResources().getString(R.string.what_house, houseClass.getName()));
+
+
+                Button buy = (Button) view.findViewById(R.id.buttonBuy);
+                final Button payPass = (Button) view.findViewById(R.id.buttonPay);
+                final Button breakThrough = (Button) view.findViewById(R.id.buttonBreak);
+                buy.setText(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())));
+
+                if (houseClass.getOwner() == OWNER_NULL) {
+                    buy.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            buttonBuy(heroClass, houseClass);
+                            houseClass.setOwner(1);
+                            dismiss();
+                        }
+                    });
+
+                }
+
+                if (houseClass.getOwner() == OWNER_PLAYER) {
+                    buy.setText(getResources().getString(R.string.at_home, heroClass.getName()));
+                    payPass.setVisibility(View.GONE);
+                    breakThrough.setVisibility(View.GONE);
+                    buy.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                            if (heroClass.getHp() > hpMaxBeforeFight)
+                                heroClass.setHp(hpMaxBeforeFight);
+                            tvHp.setText(getResources().getString(R.string.hp_bar,
+                                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+
+                            dismiss();
+                        }
+                    });
+
+                } else {
+                    payPass.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            buttonPayPass(heroClass, houseClass);
+                            dismiss();
+                        }
+                    });
+
+                }
+
+
+                breakThrough.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_LOW);
+                        dismiss();
+                    }
+                });
+
+                return builder.create();
+
+            }
+
+
+        };
+        fightResult.show(getFragmentManager(), "fight result");
+
+    }
+
     public void arenaAction(final HeroClass heroClass) {
 
         @SuppressLint("ValidFragment") final
@@ -835,47 +907,168 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                //View view = getActivity().getLayoutInflater().inflate(R.layout.arena_activity, null);
-                builder.setView(R.layout.arena2);
-
-                //builder.setMessage(getResources().getString(R.string.arena_message));
-                //builder.setTitle(getResources().getString(R.string.arena_title));
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.arena_layout, null);
+                builder.setView(view);
                 builder.setIcon(R.drawable.arena);
-                builder.setCancelable(false);
+                builder.setCancelable(true);
 
+                Button goAway = (Button) view.findViewById(R.id.buttonRun);
+                Button fightStrong = (Button) view.findViewById(R.id.buttonFightStrong);
+                Button fightMedium = (Button) view.findViewById(R.id.buttonfightMedium);
 
-                builder.setPositiveButton(getResources().getString(R.string.stop_fight),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //senderStats(heroClass, MONSTER_EASY);
-                                stopper = true;
-                                dismiss();
-                            }
-                        });
-
-                builder.setNeutralButton(getResources().getString(R.string.average_monster),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
-
-                            }
-                        });
-
-                builder.setNegativeButton(getResources().getString(R.string.strong_monster), new DialogInterface.OnClickListener() {
+                goAway.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(View view) {
+
+                        stopper = true;
+                        dismiss();
+                    }
+                });
+
+                fightMedium.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
+                    }
+                });
+
+                fightStrong.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
                     }
                 });
 
                 return builder.create();
+
             }
 
 
         };
         fightResult.show(getFragmentManager(), "fight result");
+    }
+
+    public void jailAction(final HeroClass heroClass) {
+
+        jailChecker = true;
+
+        @SuppressLint("ValidFragment") final
+        DialogFragment jailResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.jail_layout, null);
+                builder.setView(view);
+                builder.setCancelable(true);
+
+                final Button diceButton = (Button) view.findViewById(R.id.btnJailDice);
+
+                diceButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Handler handler = new Handler();
+                        randomAnimation(diceButton);
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (step == 1) {
+                                    diceButton.setBackgroundResource(R.drawable.aone);
+                                    if (!jailStaying(heroClass)) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        dismiss();
+                                    }
+                                } else if (step == 2) {
+                                    diceButton.setBackgroundResource(R.drawable.atwo);
+                                    if (!jailStaying(heroClass)) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        dismiss();
+                                    }
+                                } else if (step == 3) {
+                                    diceButton.setBackgroundResource(R.drawable.athree);
+                                    if (!jailStaying(heroClass)) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        dismiss();
+                                    }
+                                } else if (step == 4) {
+                                    diceButton.setBackgroundResource(R.drawable.afour);
+                                    if (!jailStaying(heroClass)) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        dismiss();
+                                    }
+                                } else if (step == 5) {
+                                    diceButton.setBackgroundResource(R.drawable.afive);
+                                    if (!jailStaying(heroClass)) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        dismiss();
+                                    }
+                                } else if (step == 6) {
+                                    diceButton.setBackgroundResource(R.drawable.asix);
+                                    try {
+                                        Thread.sleep(2000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Toast.makeText(getActivity(), "You are free, luck with you", Toast.LENGTH_LONG).show();
+                                    dismiss();
+                                    attempts = 0;
+                                    jailChecker = false;
+                                }
+
+                            }
+                        }, timeToWait);
+
+
+                    }
+                });
+
+                return builder.create();
+
+            }
+
+        };
+        jailResult.show(getFragmentManager(), "Jail result");
+
+    }
+
+    public boolean jailStaying(HeroClass heroClass) {
+        attempts++;
+        Toast.makeText(this, "You have " + (ALL_ATTEMPTS - attempts) + " attempts", Toast.LENGTH_SHORT).show();
+        if (attempts >= 3) {
+            heroClass.setHp(heroClass.getHp() - DAMAGE_JAIL);
+            tvHp.setText(getResources().getString(R.string.hp_bar,
+                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+
+            if (heroClass.getHp() <= 0) {
+                endGame();
+            }
+            Toast.makeText(this, "No luck today, your health goind down", Toast.LENGTH_LONG).show();
+            attempts = 0;
+            return false;
+        }
+
+        return true;
     }
 
     public void endGame() {
@@ -906,7 +1099,76 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     } // alert for end game
 
+    public void secretAreaAction(final HeroClass heroClass){
+        @SuppressLint("ValidFragment") final
+        DialogFragment jailResult = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.secret_layout, null);
+                builder.setView(view);
+                builder.setCancelable(true);
 
+                final Button btnPlay = (Button) view.findViewById(R.id.btnPlay);
+                final Button btnExit = (Button) view.findViewById(R.id.btnExit);
+
+
+                btnPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        actionChooser(randomAction(), heroClass);
+                        dismiss();
+                    }
+                });
+
+                btnExit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dismiss();
+                        Toast.makeText(getActivity(), R.string.choice, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                return builder.create();
+
+            }
+
+        };
+        jailResult.show(getFragmentManager(), "Secret result");
+
+    }
+
+    public int randomAction(){
+
+        int min = 1;
+        int max = 6;
+        Random random = new Random();
+        return random.nextInt(max - min + 1) + min;
+    }
+
+    public void actionChooser(int randomNumber, HeroClass heroClass){
+        if (randomNumber == 1){
+            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+            Toast.makeText(this, "you open the eyes after some time, and see easy enemy. Fight", Toast.LENGTH_LONG).show();
+        } else if (randomNumber == 2){
+            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+            Toast.makeText(this, "you open the eyes after some time and see medium monster", Toast.LENGTH_LONG).show();
+        } else if (randomNumber == 3){
+            magicShop(heroClass);
+            Toast.makeText(this, "That strange but you in magic shop, you can boy some potion", Toast.LENGTH_LONG).show();
+        } else if (randomNumber == 4){
+            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
+            Toast.makeText(this, "you open the eyes after some time and see STRONG monster", Toast.LENGTH_LONG).show();
+        } else if (randomNumber == 5){
+            senderStats(heroClass, MONSTER_HARD,MONSTER_BONUS_STRENGTH_HARDCORE);
+            Toast.makeText(this, "you open the eyes after some time and see BIGBOSS", Toast.LENGTH_LONG).show();
+        } else if (randomNumber == 6) {
+            arenaAction(heroClass);
+            Toast.makeText(this, " that strange but you stay in middle of arena", Toast.LENGTH_LONG).show();
+        }
+
+    }
 
 
     //______________________________________________________________________________________________

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="200dp"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
     android:layout_height="200dp"
     android:layout_gravity="center"
     android:background="@drawable/arena">
@@ -10,53 +11,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/arena_message"
-        android:textSize="14sp"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/light_font"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="1"
-        android:shadowDy="1"
+        android:shadowColor="@color/Black"
+        android:shadowDx="-2"
+        android:shadowDy="-2"
         android:shadowRadius="2" />
 
 
     <TextView
+        android:id="@+id/change"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/arena_title"
-        android:textSize="14sp"
+        android:layout_weight="0.5"
+        android:textSize="20sp"
+        android:gravity="center"
         android:textStyle="bold"
-        android:textColor="@color/light_font"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="8"/>
+        android:textColor="@color/text_shadow_white"
+        android:shadowColor="@color/Black"
+        android:shadowDx="-2"
+        android:shadowDy="-2"
+        android:shadowRadius="2"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
-            android:layout_weight="1"
+            android:id="@+id/buttonRun"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:text="@string/arena_reject" />
 
         <Button
-            android:id="@+id/button2"
-            android:layout_weight="1"
+            android:id="@+id/buttonFightStrong"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_weight="1"
+            android:text="@string/strong_monster" />
 
         <Button
-            android:id="@+id/button3"
-            android:layout_weight="1"
+            android:id="@+id/buttonfightMedium"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_weight="1"
+            android:text="@string/average_monster" />
 
 
     </LinearLayout>
