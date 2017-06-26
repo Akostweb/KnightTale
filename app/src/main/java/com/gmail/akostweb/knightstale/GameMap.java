@@ -47,6 +47,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     final public static int POTION_COST = 50;
 
+    final public static int PLAYER = 1;
+    final public static int BOT1 = 2;
+    final public static int BOT2 = 3;
+
     final public static int STEP_MAX = 16;
     final public static int MONSTER_EASY = 1;
     final public static int MONSTER_MEDIUM = 2;
@@ -72,12 +76,12 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     int attempts;
     boolean stopper, jailChecker;
-    int step, timeToWait, stepLocation;
+    int step,stepbot1, stepbot2, timeToWait;
 
     int ownerOutpost, ownerTavern, ownerTower, ownerFortress, ownerCastle;
 
-    TextView tvTopName, tvHp, tvBotName1, tvHp1, tvBotName2, tvHp2, tvGoldShow, tvExp;
-    Button ivDice, btnLvlPlusStrength, btnLvlPlusVitality, btnLvlPlusAgility, btnLvlPlusFocus;
+    TextView tvTopName, tvHp, tvBotName1, tvHpBot1, tvBotName2, tvHpBot2, tvGoldShow, tvExp, tvGoldShowBot1, tvGoldShowBot2, tvExpBot1, tvExpBot2;
+    Button ivDice, ivNext, btnLvlPlusStrength, btnLvlPlusVitality, btnLvlPlusAgility, btnLvlPlusFocus;
     ImageView iv11;
     ImageView iv12;
     ImageView iv13;
@@ -127,7 +131,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     ImageView iv162;
     ImageView iv163;
 
-    int hpBeforeFight, hpMaxBeforeFight;
+    int hpBeforeFight, hpMaxBeforeFight, hpMaxBeforeFightBot1, hpMaxBeforeFightBot2, hpBeforeFightBot1, hpBeforeFightBot2;
     int maxExperience, experience, lvl;
 
     private String[] nameArray = {"Asshole", "Cock", "Dick", "Tits", "Bobby", "Hump", "Bravo", "super", "black", "gammy"};
@@ -198,33 +202,41 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         iv163 = (ImageView) findViewById(R.id.iv163);
 
         //for player
-        tvGoldShow = (TextView) findViewById(R.id.goldShow);
+
         tvTopName = (TextView) findViewById(R.id.tvTopName);
         tvHp = (TextView) findViewById(R.id.tvHP);
+        tvGoldShow = (TextView) findViewById(R.id.goldShow);
         tvExp = (TextView) findViewById(R.id.tvExp);
 
-        //Views for bots
+        //bot1
         tvBotName1 = (TextView) findViewById(R.id.tvBotName1);
-        tvHp1 = (TextView) findViewById(R.id.tvHP1);
+        tvHpBot1 = (TextView) findViewById(R.id.tvHPBot1);
+        tvGoldShowBot1 = (TextView) findViewById(R.id.tvGoldShowBot1);
+        tvExpBot1 = (TextView) findViewById(R.id.tvExpBot1);
+
+
         tvBotName2 = (TextView) findViewById(R.id.tvBotName2);
-        tvHp2 = (TextView) findViewById(R.id.tvHP2);
+        tvHpBot2 = (TextView) findViewById(R.id.tvHPBot2);
+        tvGoldShowBot2 = (TextView) findViewById(R.id.tvGoldShowBot2);
+        tvExpBot2 = (TextView) findViewById(R.id.tvExpBot2);
 
         // creating hero
         final HeroClass player = new HeroClass();
         creatorHero(player);
+        player.setId(PLAYER);
         //__________________________________________________________________________________________
 
 
         //Creating bot1
         final HeroClass bot1 = new HeroClass(randomName(), START_STATS_DEFAULT,
-                START_STATS_DEFAULT, START_STATS_DEFAULT, START_STATS_DEFAULT);
+                START_STATS_DEFAULT, START_STATS_DEFAULT, START_STATS_DEFAULT , BOT1);
         creatorBot(bot1, STATS_TO_PURCHASE);
         fillTextBot1(bot1);
         //__________________________________________________________________________________________
 
         //Creating bot2
         HeroClass bot2 = new HeroClass(randomName(), START_STATS_DEFAULT, START_STATS_DEFAULT,
-                START_STATS_DEFAULT, START_STATS_DEFAULT);
+                START_STATS_DEFAULT, START_STATS_DEFAULT, BOT2);
         creatorBot(bot2, STATS_TO_PURCHASE);
         fillTextBot2(bot2);
         //__________________________________________________________________________________________
@@ -245,6 +257,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         final HouseClass castle = new HouseClass(OWNER_NULL, CASTLE_COST, CASTLE_PAY_PASS, CASTLE_NAME);
         ownerCastle = castle.getOwner();
 
+        ivNext = (Button) findViewById(R.id.ivNext);
+        ivNext.setVisibility(View.INVISIBLE);
+
         ivDice = (Button) findViewById(R.id.ivDice);
 
         ivDice.setOnClickListener(new View.OnClickListener() {
@@ -257,8 +272,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                     randomAnimation(ivDice);
                     handler.postDelayed(new Runnable() {
                         public void run() {
+                            ivDice.setVisibility(View.INVISIBLE);
+                            ivNext.setVisibility(View.VISIBLE);
 
-                            stepController(player, step);
+                            stepController(player, step, PLAYER);
 
                             stepAction(player, outpost, tavern, tower, fortress, castle);
 
@@ -268,7 +285,225 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 }
             }
         });
+
+        ivNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivDice.setVisibility(View.VISIBLE);
+                ivNext.setVisibility(View.INVISIBLE);
+                randomAnimation(ivDice);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        stepController(bot1, stepbot1, BOT1);
+                    }
+                }, timeToWait);
+            }
+        });
     }
+
+    //its deleting, check for round and drawing new dot
+    public void stepController(HeroClass heroClass, int step, int id) {
+        stepDotPlayerDeleteOld(heroClass, step, id);
+    } //Main method, called from here
+
+    public void stepDotPlayerDeleteOld(HeroClass heroClass, int step, int id) {
+        if (id == PLAYER){
+            if (heroClass.getStep() == 1) {
+                iv11.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 2) {
+                iv21.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 3) {
+                iv31.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 4) {
+                iv41.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 5) {
+                iv51.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 6) {
+                iv61.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 7) {
+                iv71.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 8) {
+                iv81.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 9) {
+                iv91.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 10) {
+                iv101.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 11) {
+                iv111.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 12) {
+                iv121.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 13) {
+                iv131.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 14) {
+                iv141.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 15) {
+                iv151.setBackgroundResource(R.drawable.transparent);
+            } else {
+                iv161.setBackgroundResource(R.drawable.transparent);
+            }
+        } else if (id == BOT1){
+            if (heroClass.getStep() == 1) {
+                iv12.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 2) {
+                iv22.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 3) {
+                iv32.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 4) {
+                iv42.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 5) {
+                iv52.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 6) {
+                iv62.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 7) {
+                iv72.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 8) {
+                iv82.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 9) {
+                iv92.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 10) {
+                iv102.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 11) {
+                iv112.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 12) {
+                iv122.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 13) {
+                iv132.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 14) {
+                iv142.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 15) {
+                iv152.setBackgroundResource(R.drawable.transparent);
+            } else {
+                iv162.setBackgroundResource(R.drawable.transparent);
+            }
+
+        } else if(id == BOT2){
+            if (heroClass.getStep() == 1) {
+                iv13.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 2) {
+                iv23.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 3) {
+                iv33.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 4) {
+                iv43.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 5) {
+                iv53.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 6) {
+                iv63.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 7) {
+                iv73.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 8) {
+                iv83.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 9) {
+                iv93.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 10) {
+                iv103.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 11) {
+                iv113.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 12) {
+                iv123.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 13) {
+                iv133.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 14) {
+                iv143.setBackgroundResource(R.drawable.transparent);
+            } else if (heroClass.getStep() == 15) {
+                iv153.setBackgroundResource(R.drawable.transparent);
+            } else {
+                iv163.setBackgroundResource(R.drawable.transparent);
+            }
+
+        } else {
+            Toast.makeText(this, " ID ne naiden", Toast.LENGTH_LONG).show();
+        }
+
+
+
+        stepChecker(heroClass, step, id);
+    }
+
+
+    public void stepChecker(HeroClass heroClass, int step, int id) {
+        heroClass.setStep(heroClass.getStep() + step);
+        if (heroClass.getStep() > STEP_MAX) {
+            heroClass.setRoundCount(heroClass.getRoundCount()+1);
+            heroClass.setStep(heroClass.getStep() - STEP_MAX);
+            if (id == PLAYER){
+
+                heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
+                if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
+                tvHp.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+                hpBeforeFight = heroClass.getHp();
+                tvGoldShow.setText(String.valueOf(heroClass.getGold()));
+
+            } else if ( id == BOT1){
+
+                heroClass.setHp((hpMaxBeforeFightBot1 * 2 / 5) + heroClass.getHp());
+                if (heroClass.getHp() > hpMaxBeforeFightBot1) heroClass.setHp(hpMaxBeforeFightBot1);
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
+                hpBeforeFightBot1 = heroClass.getHp();
+                tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
+
+            } else if ( id == BOT2){
+
+                heroClass.setHp((hpMaxBeforeFightBot2 * 2 / 5) + heroClass.getHp());
+                if (heroClass.getHp() > hpMaxBeforeFightBot2) heroClass.setHp(hpMaxBeforeFightBot2);
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
+                hpBeforeFightBot2 = heroClass.getHp();
+                tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
+            }
+
+
+            heroClass.setGold(heroClass.getGold() + 5*heroClass.getRoundCount());
+
+            heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
+            expChecker(heroClass);
+
+        }
+
+        stepDotPlayerNew(heroClass);
+    }
+
+    public void stepDotPlayerNew(HeroClass heroClass) {
+
+        if (heroClass.getStep() == 1) {
+            iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 2) {
+            iv21.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 3) {
+            iv31.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 4) {
+            iv41.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 5) {
+            iv51.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 6) {
+            iv61.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 7) {
+            iv71.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 8) {
+            iv81.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 9) {
+            iv91.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 10) {
+            iv101.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 11) {
+            iv111.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 12) {
+            iv121.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 13) {
+            iv131.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 14) {
+            iv141.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 15) {
+            iv151.setBackgroundResource(R.drawable.shieldsuperthumb);
+        } else if (heroClass.getStep() == 16) {
+            iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
+        }
+    }
+    // _____________________________________________________________________________________________
 
     // FUTURE THINGS EXPIERENCE AND LEVEL UP TO one of your stats
     public void OnClick(View v) {
@@ -380,6 +615,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         return randomDice;
 
+
     } //return number of dice or just change picture
 
 
@@ -403,6 +639,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     //Creates bots (bot1 or bot2)
 
+    // Creating bots and fit all views
     public void creatorBot(HeroClass bot, int count) {
 
         for (int i = 1; i <= count; i++) {
@@ -466,109 +703,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     //______________________________________________________________________________________________
 
-    //its deleting, check for round and drawing new dot
-    public void stepController(HeroClass heroClass, int step) {
-        stepDotPlayerDeleteOld(heroClass, step);
-    } //Main method, called from here
 
-    public void stepChecker(HeroClass heroClass, int step) {
-        heroClass.setStep(heroClass.getStep() + step);
-        if (heroClass.getStep() > STEP_MAX) {
-            heroClass.setRoundCount(heroClass.getRoundCount()+1);
-            heroClass.setStep(heroClass.getStep() - STEP_MAX);
-            heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
-            if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
-            tvHp.setText(getResources().getString(R.string.hp_bar,
-                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-            heroClass.setGold(heroClass.getGold() + 5*heroClass.getRoundCount());
-            hpBeforeFight = heroClass.getHp();
-            tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-            heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
-            expChecker(heroClass);
-
-        }
-        //Toast.makeText(GameMap.this, " " + heroClass.getStep(), Toast.LENGTH_SHORT).show();
-        stepLocation = heroClass.getStep();
-
-        stepDotPlayerNew(heroClass);
-    }
-
-    public void stepDotPlayerDeleteOld(HeroClass heroClass, int step) {
-
-        if (heroClass.getStep() == 1) {
-            iv11.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 2) {
-            iv21.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 3) {
-            iv31.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 4) {
-            iv41.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 5) {
-            iv51.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 6) {
-            iv61.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 7) {
-            iv71.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 8) {
-            iv81.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 9) {
-            iv91.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 10) {
-            iv101.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 11) {
-            iv111.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 12) {
-            iv121.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 13) {
-            iv131.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 14) {
-            iv141.setBackgroundResource(R.drawable.transparent);
-        } else if (heroClass.getStep() == 15) {
-            iv151.setBackgroundResource(R.drawable.transparent);
-        } else {
-            iv161.setBackgroundResource(R.drawable.transparent);
-        }
-
-        stepChecker(heroClass, step);
-    }
-
-    public void stepDotPlayerNew(HeroClass heroClass) {
-
-        if (heroClass.getStep() == 1) {
-            iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 2) {
-            iv21.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 3) {
-            iv31.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 4) {
-            iv41.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 5) {
-            iv51.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 6) {
-            iv61.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 7) {
-            iv71.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 8) {
-            iv81.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 9) {
-            iv91.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 10) {
-            iv101.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 11) {
-            iv111.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 12) {
-            iv121.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 13) {
-            iv131.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 14) {
-            iv141.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 15) {
-            iv151.setBackgroundResource(R.drawable.shieldsuperthumb);
-        } else if (heroClass.getStep() == 16) {
-            iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
-        }
-    }
-    // _____________________________________________________________________________________________
 
     // Fighting after turn or using houseClass:
     // - Action for step dot(House action or fight action)
@@ -592,6 +727,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
         } else if (heroClass.getStep() == 4) {
+
             magicShop(heroClass);
 
         } else if (heroClass.getStep() == 5) {

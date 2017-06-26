@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.gmail.akostweb.knightstale.createHero">
+            android:noHistory="true"
         </activity>
         <activity android:name=".Options"></activity>
         <activity android:name=".Faq"></activity>

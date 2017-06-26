@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/bot1"
+                    android:text="@string/player1"
                     android:textSize="@dimen/small_text" />
             </LinearLayout>
 
@@ -76,76 +76,139 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvBotName1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/player1"
-                android:textSize="@dimen/text_size" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/verysmall"
-                android:contentDescription="@string/image" />
-
-            <TextView
-                android:id="@+id/tvHP1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:text="@string/bot1"
-                android:textSize="@dimen/text_size" />
-
-
-        </LinearLayout>
+        <!--_________________END Player____________________-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/colorPrimaryDark"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTopNameBot1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/player1"
+                    android:textSize="@dimen/small_text" />
+
+                <TextView
+                    android:id="@+id/tvGoldShowBot1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/gold_top"
+                    android:textSize="@dimen/small_text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageViewBot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_weight="1"
+                    android:background="@drawable/verysmall"
+                    android:contentDescription="@string/image" />
+
+                <TextView
+                    android:id="@+id/tvHPBot1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/bot1"
+                    android:textSize="@dimen/small_text" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tvBotName2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:id="@+id/tvExpBot1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/player1"
-                android:textSize="@dimen/text_size" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/verysmall"
-                android:contentDescription="@string/image" />
-
-            <TextView
-                android:id="@+id/tvHP2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:contentDescription="@string/image"
-                android:gravity="start"
-                android:text="@string/bot1"
-                android:textSize="@dimen/text_size" />
-
+                android:text="@string/experience"
+                android:textSize="@dimen/small_text" />
 
         </LinearLayout>
+
+        <!--____________END BOT1______________________-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTopNameBot2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/player1"
+                    android:textSize="@dimen/small_text" />
+
+                <TextView
+                    android:id="@+id/tvGoldShowBot2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/gold_top"
+                    android:textSize="@dimen/small_text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageViewBot2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_weight="1"
+                    android:background="@drawable/verysmall"
+                    android:contentDescription="@string/image" />
+
+                <TextView
+                    android:id="@+id/tvHPBot2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/player1"
+                    android:textSize="@dimen/small_text" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvExpBot2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/experience"
+                android:textSize="@dimen/small_text" />
+
+        </LinearLayout>
+
+        <!--__________________END BOT2__________________-->
 
 
     </LinearLayout>
@@ -394,15 +457,31 @@
             android:layout_height="match_parent"
             android:layout_weight="0.6777"
             android:baselineAligned="false"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:textSize="@dimen/text_size">
 
-            <Button
-                android:id="@+id/ivDice"
-                android:layout_width="@dimen/box_button"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@drawable/aone" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/ivDice"
+                    android:layout_width="@dimen/box_button"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:background="@drawable/aone" />
+                <Button
+                    android:id="@+id/ivNext"
+                    android:layout_width="@dimen/box_button"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:background="@drawable/next" />
+
+
+            </FrameLayout>
+
 
         </LinearLayout>
 

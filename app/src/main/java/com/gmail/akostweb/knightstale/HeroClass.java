@@ -8,12 +8,13 @@ public class HeroClass {
     int strength;
     int agility;
     int focus;
+    int id;
 
 
     public HeroClass() {
     }
 
-    public HeroClass(String name, int vitality, int strength, int agility, int focus, int hp, int roundCount) {
+    public HeroClass(String name, int vitality, int strength, int agility, int focus, int hp, int roundCount, int id) {
         this.name = name;
         this.vitality = vitality;
         this.strength = strength;
@@ -21,14 +22,16 @@ public class HeroClass {
         this.focus = focus;
         this.hp = hp;
         this.roundCount = roundCount;
+        this.id = id;
     }
 
-    public HeroClass(String name, int vitality, int strength, int agility, int focus) {
+    public HeroClass(String name, int vitality, int strength, int agility, int focus, int id) {
         this.name = name;
         this.vitality = vitality;
         this.strength = strength;
         this.agility = agility;
         this.focus = focus;
+        this.id = id;
     }
 
     private int hp;
@@ -42,6 +45,15 @@ public class HeroClass {
     private int roundCount;
     private int gold;
     private int exp;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getExp() {
         return exp;
