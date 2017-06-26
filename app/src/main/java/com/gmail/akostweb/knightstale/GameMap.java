@@ -474,12 +474,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public void stepChecker(HeroClass heroClass, int step) {
         heroClass.setStep(heroClass.getStep() + step);
         if (heroClass.getStep() > STEP_MAX) {
+            heroClass.setRoundCount(heroClass.getRoundCount()+1);
             heroClass.setStep(heroClass.getStep() - STEP_MAX);
             heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
             if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-            heroClass.setGold(heroClass.getGold() + 10);
+            heroClass.setGold(heroClass.getGold() + 5*heroClass.getRoundCount());
             hpBeforeFight = heroClass.getHp();
             tvGoldShow.setText(String.valueOf(heroClass.getGold()));
             heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
@@ -1112,7 +1113,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
                 final Button btnPlay = (Button) view.findViewById(R.id.btnPlay);
                 final Button btnExit = (Button) view.findViewById(R.id.btnExit);
-
 
                 btnPlay.setOnClickListener(new View.OnClickListener() {
                     @Override
