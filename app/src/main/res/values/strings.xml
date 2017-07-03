@@ -36,6 +36,8 @@
     <string name="faq">FAQ</string>
 
     <!--Create hero text-->
+    <string name="bot_result_fight_win">%1$S damaged monster for %2$S and get damage %3$S. </string>
+    <string name="bot_lost_fighting">%1$S is dead</string>
     <string name="player1">Player1</string>
     <string name="bot1">Bot1</string>
     <string name="bot2">Bot2</string>
@@ -61,6 +63,9 @@
     <string name="stats_limit">Stat`s can`t be less then 2</string>
 
     <!--Text action for houses-->
+    <string name="home">%1$S get some rest at %2$S</string>
+    <string name="you_pay_for_path">%1$S pay for pass %2$S</string>
+    <string name="bot_buy_house">%1$S bought %2$S</string>
     <string name="your_house">This is your house</string>
     <string name="action1">Runaway</string>
     <string name="action2">Fight</string>
@@ -121,7 +126,7 @@
     <!--FIGHT-->
     <string name="critical_strike">%1$S hits critical strike for %2$S !</string>
     <string name="evasion_critical_strike">%1$S dodged a critical strike</string>
-    <string name="evasion">%1$S dodged attack of %2$S</string>
+    <string name="evasion">%1$S dodged attack from his opponent</string>
     <string name="hit">%1$S smash for %2$S damage</string>
     <string name="next_round">Next round!</string>
     <string name="draw"> Draw! They all dead! </string>

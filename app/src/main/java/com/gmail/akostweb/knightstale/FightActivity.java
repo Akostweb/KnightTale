@@ -7,9 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.renderscript.Sampler;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class FightActivity extends Activity {
+
+    public static final int FIRST = 1;
+    public static final int TWO = 2;
+    public static final int THREE = 3;
+    public static final int FOUR = 4;
 
     public static final double CRITICAL_HIT = 2.5;
     public static final int MINIMAL_STATS = 8;
@@ -41,6 +48,9 @@ public class FightActivity extends Activity {
     public static final int WINNER_SECOND = 2;
     public static final boolean CRIT = true;
     public static final boolean EVASION = false;
+    public static final int PLAYER = 1;
+    public static final int BOT1 = 2;
+    public static final int BOT2 = 3;
 
     TextView tvVitality1, tvVitality2, tvStrength1, tvStrength2, tvAgility1, tvAgility2, tvFocus1,
             tvFocus2, tvFightHP1, tvFightHP2, tvFirstName, tvSecondName, tvCritChance1,
@@ -48,14 +58,16 @@ public class FightActivity extends Activity {
 
     Button btnFight;
 
-    int hpFirst, hpSecond;
+    int hpFirst, hpSecond, hpDamaged, hpLost;
+
+    boolean stopper = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fight_activity);
 
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         tvFightHP1 = (TextView) findViewById(R.id.tvFightHp1);
         tvFightHP2 = (TextView) findViewById(R.id.tvFightHp2);
@@ -96,89 +108,126 @@ public class FightActivity extends Activity {
         int typeOfMonster = intent.getIntExtra("lvl", NO_ANSWER);
         int roundCount = intent.getIntExtra("roundCount", NO_ANSWER);
         int bonusStats = intent.getIntExtra("lvl monster", NO_ANSWER_ZERO);
+        int id = intent.getIntExtra("id", NO_ANSWER_ZERO);
 
         final HeroClass player = new HeroClass(name, vitality, strength, agility, focus,
-                hp, roundCount);
+                hp, roundCount, id);
         setStatsHero(player, hp);
 
         final HeroClass monster = new HeroClass(randomMonsterName(typeOfMonster), DEFAULT_STATS,
-                DEFAULT_STATS, DEFAULT_STATS, DEFAULT_STATS);
+                DEFAULT_STATS, DEFAULT_STATS, DEFAULT_STATS, 4);
 
         setStatsBot(monster, MINIMAL_STATS + typeOfMonster + player.getRoundCount() +
                 bonusStats * BONUS_RATE_STATS);
 
         fillAllTexts(player, monster);
 
-        btnFight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                roundFight(player, monster);
+        if (player.getId() == BOT1 || player.getId() == BOT2) {
+            hpDamaged = 0;
+            hpLost = 0;
+            btnFight.setVisibility(View.INVISIBLE);
+            MyTaskParams params = new MyTaskParams(player, monster);
+            MyTask myTask = new MyTask();
+            myTask.execute(params);
+        }
 
-            }
-        });
+        if (player.getId() == PLAYER) {
+            btnFight.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    roundFight(player, monster);
+                }
+            });
+        }
 
     } // one method called in it roundFight
 
     // Logic of the fighting
 
-    public void roundFight(HeroClass hero, HeroClass hero1) {
+
+    public void writingText(final HeroClass heroClass, final TextView tv, final int what) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (what == FIRST) {
+                    tvDamage1.setTextColor(Color.RED);
+                    tv.setText(getResources().getString(R.string.evasion_critical_strike, String.valueOf(heroClass.getName())));
+                } else if (what == TWO) {
+                    tvDamage1.setTextColor(Color.RED);
+                    tv.setText(getResources().getString(R.string.critical_strike,
+                            String.valueOf(heroClass.getName()), String.valueOf(Math.round
+                                    (heroClass.getDamage() * CRITICAL_HIT))));
+                } else if (what == THREE) {
+                    tvDamage1.setTextColor(Color.BLACK);
+                    tv.setText(getResources().getString(R.string.evasion,
+                            String.valueOf(heroClass.getName())));
+
+                } else if (what == FOUR) {
+                    tvDamage1.setTextColor(Color.BLACK);
+                    tv.setText(getResources().getString(R.string.hit, String.valueOf(heroClass.getName()), String.valueOf(heroClass.getDamage())));
+                }
+            }
+        });
+
+    }
+
+    public void roundFight(final HeroClass hero, final HeroClass monster) {
+        stopper = true;
+
         if (randomCriticalEvasion(hero, CRIT)) {
-            tvDamage1.setTextColor(Color.RED);
-            if (randomCriticalEvasion(hero1, EVASION)) {
-                hpSecond = hero1.getHp();
-                tvDamage1.setText(getResources().getString(R.string.evasion_critical_strike,
-                        String.valueOf(hero1.getName())));
+            if (randomCriticalEvasion(monster, EVASION)) {
+                hpSecond = monster.getHp();
+                writingText(monster, tvDamage1, FIRST);
             } else {
-                hpSecond = (int) Math.round(hero1.getHp() - hero.getDamage() * CRITICAL_HIT);
-                tvDamage1.setText(getResources().getString(R.string.critical_strike,
-                        String.valueOf(hero.getName()), String.valueOf(Math.round(hero.getDamage() * CRITICAL_HIT))));
+                hpSecond = (int) Math.round(monster.getHp() - hero.getDamage() * CRITICAL_HIT);
+                hpDamaged = (int) (hpDamaged + hero.getDamage()*CRITICAL_HIT);
+                writingText(hero, tvDamage1, TWO);
             }
 
         } else {
-            tvDamage1.setTextColor(Color.BLACK);
-            if (randomCriticalEvasion(hero1, EVASION)) {
-                tvDamage1.setText(getResources().getString(R.string.evasion,
-                        String.valueOf(hero1.getName()), String.valueOf(hero.getName())));
-                hpSecond = hero1.getHp();
+
+            if (randomCriticalEvasion(monster, EVASION)) {
+                writingText(monster, tvDamage1, THREE);
+                hpSecond = monster.getHp();
             } else {
-                hpSecond = hero1.getHp() - hero.getDamage();
-                tvDamage1.setText(getResources().getString(R.string.hit,
-                        String.valueOf(hero.getName()), String.valueOf(hero.getDamage())));
+                hpSecond = monster.getHp() - hero.getDamage();
+                hpDamaged = (int) (hpDamaged + hero.getDamage());
+                writingText(hero, tvDamage1, FOUR);
             }
         }
 
-        if (randomCriticalEvasion(hero1, CRIT)) {
-            tvDamage2.setTextColor(Color.RED);
+        if (randomCriticalEvasion(monster, CRIT)) {
             if (randomCriticalEvasion(hero, EVASION)) {
-                tvDamage2.setText(getResources().getString(R.string.evasion_critical_strike, String.valueOf(hero.getName())));
                 hpFirst = hero.getHp();
+                writingText(hero, tvDamage2, FIRST);
             } else {
-                hpFirst = (int) Math.round(hero.getHp() - hero1.getDamage() * CRITICAL_HIT);
-                tvDamage2.setText(getResources().getString(R.string.critical_strike,
-                        String.valueOf(hero1.getName()), String.valueOf(Math.round(hero1.getDamage() * CRITICAL_HIT))));
+                hpFirst = (int) Math.round(hero.getHp() - monster.getDamage() * CRITICAL_HIT);
+                hpLost = (int) (hpLost + monster.getDamage() * CRITICAL_HIT);
+                writingText(monster, tvDamage2, TWO);
             }
 
         } else {
-            tvDamage2.setTextColor(Color.BLACK);
             if (randomCriticalEvasion(hero, EVASION)) {
-                tvDamage2.setText(getResources().getString(R.string.evasion,
-                        String.valueOf(hero.getName()), String.valueOf(hero1.getName())));
+                writingText(hero, tvDamage2, THREE);
                 hpFirst = hero.getHp();
 
             } else {
-                hpFirst = hero.getHp() - hero1.getDamage();
-                tvDamage2.setText(getResources().getString(R.string.hit,
-                        String.valueOf(hero1.getName()), String.valueOf(hero1.getDamage())));
+                hpFirst = hero.getHp() - monster.getDamage();
+                hpLost = (int) (hpLost + monster.getDamage());
+                writingText(monster, tvDamage2, FOUR);
             }
-
         }
+
+
+
         hero.setHp(hpFirst);
-        hero1.setHp(hpSecond);
-        fillHpAfterRound(hero, hero1);
-        hpChecker(hero, hero1);
+        monster.setHp(hpSecond);
+        fillHpAfterRound(hero, monster);
+        if (hpFirst <= 0 || hpSecond <= 0) stopper = false;
+        hpChecker(hero, monster);
 
-
-    } //main method
+    }//main method
 
     public boolean randomCriticalEvasion(HeroClass hero, boolean critOrEvasion) {
 
@@ -204,66 +253,93 @@ public class FightActivity extends Activity {
 
     } //Critical strike and evasion working
 
-    public void fillHpAfterRound(HeroClass player, HeroClass monster){
-        tvFightHP1.setText(getResources().getString(R.string.hp_bar, String.valueOf(player.getHp()),
-                String.valueOf(player.getVitality() * VITALITY_BONUS_HP +
-                        player.getStrength() * STRENGTH_BONUS_HP)));
-        tvFightHP2.setText(getResources().getString(R.string.hp_bar, String.valueOf(monster.getHp()),
-                String.valueOf(monster.getVitality() * VITALITY_BONUS_HP +
-                        monster.getStrength() * STRENGTH_BONUS_HP)));
+    public void fillHpAfterRound(final HeroClass player, final HeroClass monster) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvFightHP1.setText(getResources().getString(R.string.hp_bar, String.valueOf(player.getHp()),
+                        String.valueOf(player.getVitality() * VITALITY_BONUS_HP +
+                                player.getStrength() * STRENGTH_BONUS_HP)));
+                tvFightHP2.setText(getResources().getString(R.string.hp_bar, String.valueOf(monster.getHp()),
+                        String.valueOf(monster.getVitality() * VITALITY_BONUS_HP +
+                                monster.getStrength() * STRENGTH_BONUS_HP)));
+            }
+        });
+
     } // refresh hp of players
 
-    public void fightResult (final HeroClass player , final HeroClass monster, final int result){
-        btnFight.setEnabled(false);
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
+    public void fightResult(final HeroClass player, final HeroClass monster, final int result) {
+        runOnUiThread(new Runnable() {
             @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                if (result == DRAW) {
-                    builder.setMessage(getResources().getString(R.string.draw));
-                } else if (result == WINNER_FIRST) {
-                    builder.setMessage(getResources().getString(R.string.dead,
-                            String.valueOf(player.getName()),
-                            String.valueOf(monster.getName())));
-                } else if (result == WINNER_SECOND) {
-                    builder.setMessage(getResources().getString(R.string.dead,
-                            String.valueOf(monster.getName()),
-                            String.valueOf(player.getName())));
-                }
-                builder.setPositiveButton(R.string.back_to_map,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent();
-                                intent.putExtra("hp1", String.valueOf(player.getHp()));
-                                setResult(RESULT_OK, intent);
-                                finish();
+            public void run() {
+                btnFight.setEnabled(false);
+                @SuppressLint("ValidFragment") final
+                DialogFragment fightResult = new DialogFragment() {
+                    @Override
+                    public Dialog onCreateDialog(Bundle savedInstanceState) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        setCancelable(false);
+                        if (result == DRAW) {
+                            builder.setMessage(getResources().getString(R.string.draw));
+                        } else if (result == WINNER_FIRST) {
+                            builder.setMessage(getResources().getString(R.string.dead,
+                                    String.valueOf(player.getName()),
+                                    String.valueOf(monster.getName())));
+                        } else if (result == WINNER_SECOND) {
+                            builder.setMessage(getResources().getString(R.string.dead,
+                                    String.valueOf(monster.getName()),
+                                    String.valueOf(player.getName())));
+                        }
+                        if (player.getId() == PLAYER){
+                            builder.setPositiveButton(R.string.back_to_map,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Intent intent = new Intent();
+                                            intent.putExtra("hp1", String.valueOf(player.getHp()));
+                                            intent.putExtra("id1", String.valueOf(player.getId()));
+                                            intent.putExtra("name", player.getName());
+                                            intent.putExtra("hpDamaged", String.valueOf(hpDamaged));
+                                            intent.putExtra("hpLost", String.valueOf(hpLost));
+                                            setResult(RESULT_OK, intent);
+                                            finish();
 
-                            }
-                        });
+                                        }
+                                    });
+                        } else {
+                            Intent intent = new Intent();
+                            intent.putExtra("hp1", String.valueOf(player.getHp()));
+                            intent.putExtra("id1", String.valueOf(player.getId()));
+                            intent.putExtra("hpDamaged", String.valueOf(hpDamaged));
+                            intent.putExtra("hpLost", String.valueOf(hpLost));
+                            intent.putExtra("name", player.getName());
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
 
-                return builder.create();
+
+                        return builder.create();
+                    }
+                };
+                fightResult.show(getFragmentManager(), "fight result");
+
             }
-        };
-
-        fightResult.show(getFragmentManager(), "fight result");
+        });
 
     } // show who is winner
 
-    public void hpChecker(HeroClass hero, HeroClass hero1) {
-        if (hero.getHp() <= 0 && hero1.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, DRAW);
+    public void hpChecker(HeroClass hero, HeroClass monster) {
+        if (hero.getHp() <= 0 && monster.getHp() <= 0) {
+            //btnFight.setEnabled(false);
+            fightResult(hero, monster, DRAW);
         } else if (hero.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, WINNER_FIRST);
-        } else if (hero1.getHp() <= 0) {
-            btnFight.setEnabled(false);
-            fightResult(hero, hero1, WINNER_SECOND);
+            //btnFight.setEnabled(false);
+            fightResult(hero, monster, WINNER_FIRST);
+        } else if (monster.getHp() <= 0) {
+            //btnFight.setEnabled(false);
+            fightResult(hero, monster, WINNER_SECOND);
         } else {
-            btnFight.setEnabled(true);
+            //btnFight.setEnabled(true);
         }
     } // watching hp and called fight result if smdy dead
 
@@ -272,9 +348,9 @@ public class FightActivity extends Activity {
     // Generating clone of player hero
 
     public void setStatsHero(HeroClass hero, int hp) {
-        hero.setDamage(hero.strength * STRENGTH_BONUS_DAMAGE + hero.vitality * VITALITY_BONUS_DAMAGE);
-        hero.setCrit(hero.focus * FOCUS_BONUS);
-        hero.setEvasion(hero.agility * AGILITY_BONUS);
+        hero.setDamage(hero.getStrength() * STRENGTH_BONUS_DAMAGE + hero.getVitality() * VITALITY_BONUS_DAMAGE);
+        hero.setCrit(hero.getFocus() * FOCUS_BONUS);
+        hero.setEvasion(hero.getAgility() * AGILITY_BONUS);
         hero.setHp(hp);
     }
 
@@ -377,8 +453,57 @@ public class FightActivity extends Activity {
 
     //
 
+    private static class MyTaskParams {
+        HeroClass hero;
+        HeroClass monster;
+
+        MyTaskParams(HeroClass hero, HeroClass monster) {
+            this.hero = hero;
+            this.monster = monster;
+        }
+    }
+
+    private class MyTask extends AsyncTask<MyTaskParams, Void, Void> {
+        @Override
+        protected Void doInBackground(MyTaskParams... params) {
+            final HeroClass hero = params[0].hero;
+            final HeroClass monster = params[0].monster;
+
+            try {
+                TimeUnit.SECONDS.sleep(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    do {
+
+                        roundFight(hero, monster);
+                    } while (stopper);
+
+                }
 
 
+            });
 
 
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+            super.onProgressUpdate(values);
+
+
+        }
+    }
 }
+
+
+
+
+

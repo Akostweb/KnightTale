@@ -46,6 +46,16 @@ public class HeroClass {
     private int gold;
     private int exp;
 
+    public int getLvl() {
+        return lvl;
+    }
+
+    public void setLvl(int lvl) {
+        this.lvl = lvl;
+    }
+
+    private int lvl;
+
 
     public int getId() {
         return id;
