@@ -10,6 +10,10 @@
     <string name="game_over">Game Over</string>
     <string name="title_over">Your life ends here.</string>
     <string name="experience">Exp %1$S/%2$S</string>
+    <string name="bot_dead">%1$S life ends here, but tale go on</string>
+    <string name="dead_end">dead</string>
+    <string name="winner">You are winner!</string>
+    <string name="celebrate">I will drink a wine for their souls</string>
 
     <!--secret area-->
     <string name="secret_title">You came to the strange place. You try to describe your feeling…</string>
@@ -17,11 +21,15 @@
         destroyed window. Maybe it is a gravestone. You think that you should touch the stone, maybe it will
         help me to decide on the action.</string>
     <string name="secret_btn">You decided to touch the stone</string>
+    <string name="secret_btn_bot">%1$S decided to touch the stone</string>
     <string name="secretExit_btn">You don`t want to risk</string>
+    <string name="bot_no_risk">%1$S don`t want to risk</string>
     <string name="choice">You make your choice</string>
 
 
     <!--jail info-->
+    <string name="bot_no_luck">No luck for %1$S, he can`t escape today. Your numbers is %2$S, %3$S and %4$S.</string>
+    <string name="bot_got_lucky">%1$S manage to escape!! Good luck for him.</string>
     <string name="jain_info">You are in jail now. This world is not fair.</string>
     <string name="jail_action">You do not have time to prove your innocence. Only luck will help
         you escape from prison(To roll a cube to six), for one move you can roll a cube three times.
@@ -50,7 +58,7 @@
     <string name="strength">Strength: </string>
     <string name="agility">Agility: </string>
     <string name="focus">Focus: </string>
-    <string name="default_stat">20</string>
+    <string name="default_stat">10</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="set_start">Stats distributed and ready to fight</string>
@@ -82,6 +90,13 @@
     <string name="path">Your way has brought somewhere</string>
 
     <!--SHOP-->
+    <string name="nothing_bought">%1$S don`t want to buy anything</string>
+    <string name="strength_shop">strength</string>
+    <string name="vitality_shop">vitality</string>
+    <string name="agility_shop">agility</string>
+    <string name="focus_shop">focus</string>
+    <string name="nothing">I don`t want to spend my money for your fantasy, goodbye!</string>
+    <string name="buy_stat">%1$S bought potion of %2$S and he got overall %3$S</string>
     <string name="shop_text">Hello adventurer, i can sell you some magic potion for 50 gold. Each time you came, you can bought one potion per round. Bless you with beard of almighty Merlin</string>
     <string name="shop_magic">Shop magic</string>
     <string name="vitality_potion">Gain vitality +</string>
@@ -107,6 +122,9 @@
     <string name="message_text">Outpost</string>
 
     <!--Arena-->
+    <string name="not_today_bot">%1$S decided to go elsewhere</string>
+    <string name="fight_medium_bot">%1$S decided to fight with medium enemy</string>
+    <string name="fight_hard_bot">%1$S decided to fight with strong enemy</string>
     <string name="arena_message">You hear a roars and furious cries. No doubt, this is an arena.
         Where brave warriors can get rich or meet their death with honor</string>
     <string name="arena_title">Famous place with1 a lot of people. You can fight with strongest

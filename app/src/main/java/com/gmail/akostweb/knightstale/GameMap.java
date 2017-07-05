@@ -51,6 +51,14 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     final public static int BOT1 = 2;
     final public static int BOT2 = 3;
 
+    final public static int NULL = 0;
+    final public static int ONE = 1;
+    final public static int TWO = 2;
+    final public static int THREE = 3;
+    final public static int FOUR = 4;
+    final public static int FIVE = 5;
+    final public static int SIX = 6;
+
     final public static int STEP_MAX = 16;
     final public static int MONSTER_EASY = 1;
     final public static int MONSTER_MEDIUM = 2;
@@ -74,12 +82,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public static final int FORTRESS = 12;
     public static final int CASTLE = 15;
 
+    String playerName, botName1, botName2, dead;
     int attempts;
-    boolean stopper, jailChecker;
+    boolean stopper, jailCheckerPlayer, jailCheckerBot1, jailCheckerBot2, botDead1,botDead2;
     int step, stepbot1, stepbot2, timeToWait;
 
     TextView tvTopName, tvHp, tvBotName1, tvHpBot1, tvBotName2, tvHpBot2, tvGoldShow, tvExp, tvGoldShowBot1, tvGoldShowBot2, tvExpBot1, tvExpBot2, tvBotFightingResult;
-    Button ivDice, ivNext, btnLvlPlusStrength, btnLvlPlusVitality, btnLvlPlusAgility, btnLvlPlusFocus;
+    Button ivDice, ivBot1, ivBot2, btnLvlPlusStrength, btnLvlPlusVitality, btnLvlPlusAgility, btnLvlPlusFocus;
     ImageView iv11;
     ImageView iv12;
     ImageView iv13;
@@ -223,6 +232,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         final HeroClass player = new HeroClass();
         creatorHero(player);
         player.setId(PLAYER);
+        playerName = player.getName();
         //__________________________________________________________________________________________
 
 
@@ -230,12 +240,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         final HeroClass bot1 = new HeroClass(randomName(), START_STATS_DEFAULT,
                 START_STATS_DEFAULT, START_STATS_DEFAULT, START_STATS_DEFAULT, BOT1);
         creatorBot(bot1, STATS_TO_PURCHASE);
+        botName1 = bot1.getName();
+        botDead1 = false;
+
         //__________________________________________________________________________________________
 
         //Creating bot2
         final HeroClass bot2 = new HeroClass(randomName(), START_STATS_DEFAULT, START_STATS_DEFAULT,
                 START_STATS_DEFAULT, START_STATS_DEFAULT, BOT2);
         creatorBot(bot2, STATS_TO_PURCHASE);
+        botName2 = bot2.getName();
+        botDead2 = false;
         //__________________________________________________________________________________________
 
 
@@ -251,8 +266,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         final HouseClass castle = new HouseClass(OWNER_NULL, CASTLE_COST, CASTLE_PAY_PASS, CASTLE_NAME);
 
 
-        ivNext = (Button) findViewById(R.id.ivNext);
-        ivNext.setVisibility(View.INVISIBLE);
+        dead = "dead";
+        ivBot1 = (Button) findViewById(R.id.ivBot1);
+        ivBot1.setVisibility(View.INVISIBLE);
+
+        ivBot2 = (Button) findViewById(R.id.ivBot2);
+        ivBot2.setVisibility(View.INVISIBLE);
+
 
         tvBotFightingResult = (TextView) findViewById(R.id.botFightinResult);
 
@@ -261,19 +281,30 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         ivDice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (jailChecker) {
+                if (jailCheckerPlayer) {
                     jailAction(player);
                 } else {
                     Handler handler = new Handler();
                     randomAnimation(ivDice, player);
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            ivDice.setVisibility(View.INVISIBLE);
-                            ivNext.setVisibility(View.VISIBLE);
 
                             stepController(player, step);
 
                             stepAction(player, outpost, tavern, tower, fortress, castle, bot1, bot2);
+                            if (botDead1){
+                                ivDice.setVisibility(View.INVISIBLE);
+                                ivBot2.setVisibility(View.VISIBLE);
+                                ivBot1.setVisibility(View.GONE);
+                            } else if (botDead2){
+                                ivDice.setVisibility(View.INVISIBLE);
+                                ivBot1.setVisibility(View.VISIBLE);
+                                ivBot2.setVisibility(View.GONE);
+                            } else {
+                                ivDice.setVisibility(View.INVISIBLE);
+                                ivBot1.setVisibility(View.VISIBLE);
+                                ivBot2.setVisibility(View.INVISIBLE);
+                            }
 
                             // player.setHp(hpBeforeFight);
                         }
@@ -282,21 +313,81 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             }
         });
 
-        ivNext.setOnClickListener(new View.OnClickListener() {
+        ivBot1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ivNext.setVisibility(View.INVISIBLE);
-                randomAnimation(ivDice, bot1);
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        stepController(bot1, stepbot1);
-                        stepAction(bot1, outpost, tavern, tower, fortress, castle, player, bot2);
-                    }
-                }, timeToWait);
+                if (jailCheckerBot1) {
+                    jailAction(bot1);
+                } else {
+                    ivBot1.setEnabled(false);
+                    randomAnimation(ivBot1, bot1);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stepController(bot1, stepbot1);
+                            stepAction(bot1, outpost, tavern, tower, fortress, castle, player, bot2);
 
-                ivDice.setVisibility(View.VISIBLE);
+                            if (botDead1){
+                                ivBot1.setVisibility(View.GONE);
+                                ivBot2.setVisibility(View.VISIBLE);
+                                ivDice.setVisibility(View.INVISIBLE);
+                            } else if (botDead2){
+                                ivBot2.setVisibility(View.GONE);
+                                ivDice.setVisibility(View.VISIBLE);
+                                ivBot1.setVisibility(View.INVISIBLE);
+                            } else {
+                                ivBot2.setVisibility(View.VISIBLE);
+                                ivDice.setVisibility(View.INVISIBLE);
+                                ivBot1.setVisibility(View.INVISIBLE);
+                                ivBot1.setEnabled(true);
+
+                            }
+
+                        }
+                    }, timeToWait);
+
+
+                }
+
+            }
+        });
+
+        ivBot2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (jailCheckerBot2) {
+                    jailAction(bot2);
+                } else {
+                    ivBot2.setEnabled(false);
+                    randomAnimation(ivBot2, bot2);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stepController(bot2, stepbot2);
+                            stepAction(bot2, outpost, tavern, tower, fortress, castle, player, bot1);
+                            if (botDead1){
+                                ivBot1.setVisibility(View.GONE);
+                                ivBot2.setVisibility(View.INVISIBLE);
+                                ivDice.setVisibility(View.VISIBLE);
+                            } else if (botDead2){
+                                ivBot2.setVisibility(View.GONE);
+                                ivDice.setVisibility(View.VISIBLE);
+                                ivBot1.setVisibility(View.INVISIBLE);
+                            } else {
+                                ivBot2.setVisibility(View.INVISIBLE);
+                                ivDice.setVisibility(View.VISIBLE);
+                                ivBot1.setVisibility(View.INVISIBLE);
+                                ivBot2.setEnabled(true);
+
+                            }
+                        }
+                    }, timeToWait);
+
+
+                }
+
             }
         });
     }
@@ -427,7 +518,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             heroClass.setStep(heroClass.getStep() - STEP_MAX);
             if (heroClass.id == PLAYER) {
 
-                heroClass.setHp((hpMaxBeforeFight * 2 / 5) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFight * TWO / FIVE) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
                 tvHp.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
@@ -436,7 +527,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             } else if (heroClass.id == BOT1) {
 
-                heroClass.setHp((hpMaxBeforeFightBot1 * 2 / 5) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFightBot1 * TWO / FIVE) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot1) heroClass.setHp(hpMaxBeforeFightBot1);
                 tvHpBot1.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
@@ -445,7 +536,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             } else if (heroClass.id == BOT2) {
 
-                heroClass.setHp((hpMaxBeforeFightBot2 * 2 / 5) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFightBot2 * TWO / FIVE) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot2) heroClass.setHp(hpMaxBeforeFightBot2);
                 tvHpBot1.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
@@ -454,7 +545,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             }
 
 
-            heroClass.setGold(heroClass.getGold() + 5 * heroClass.getRoundCount());
+            heroClass.setGold(heroClass.getGold() + FIVE * heroClass.getRoundCount());
 
             heroClass.setExp(heroClass.getExp() + 100 * heroClass.getRoundCount());
             expChecker(heroClass);
@@ -622,30 +713,28 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     } // method that gives back number that how many time it will dice
 
     public int randomKubThreadLast(Button btn) {
-        int min = 1;
-        int max = 6;
-        Random random = new Random();
-        int randomDice = random.nextInt(max - min + 1) + min;
+
+        int randomDice = randomAction(ONE, SIX);
         image(randomDice, btn);
 
         return randomDice;
 
 
-    } //return number of dice or just change picture
+    } //return number of dice or just change picture NUMBER NUMBER
 
 
     public void image(int random, Button btn) {
-        if (random == 1) {
+        if (random == ONE) {
             btn.setBackgroundResource(R.drawable.aone);
-        } else if (random == 2) {
+        } else if (random == TWO) {
             btn.setBackgroundResource(R.drawable.atwo);
-        } else if (random == 3) {
+        } else if (random == THREE) {
             btn.setBackgroundResource(R.drawable.athree);
-        } else if (random == 4) {
+        } else if (random == FOUR) {
             btn.setBackgroundResource(R.drawable.afour);
-        } else if (random == 5) {
+        } else if (random == FIVE) {
             btn.setBackgroundResource(R.drawable.afive);
-        } else if (random == 6) {
+        } else if (random == SIX) {
             btn.setBackgroundResource(R.drawable.asix);
         }
 
@@ -667,7 +756,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                            HouseClass tower, HouseClass fortress, HouseClass castle, HeroClass heroClassPassive1, HeroClass heroClassPassive2) {
         if (heroClassTurn.getStep() == 1) {
             heroClassTurn.setRoundCount(heroClassTurn.getRoundCount() + 1);
-            heroClassTurn.setGold(heroClassTurn.getGold() + 5 * heroClassTurn.getRoundCount());
+            heroClassTurn.setGold(heroClassTurn.getGold() + FIVE * heroClassTurn.getRoundCount());
 
         } else if (heroClassTurn.getStep() == OUTPOST) {
 
@@ -811,7 +900,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(hp), String.valueOf(hpMaxBeforeFight)));
             hpBeforeFight = hp;
-            if (hpBeforeFight <= ZERO) endGame();
+            if (hpBeforeFight <= ZERO) endGame(idBack);
             Toast.makeText(this, hpBeforeFight + " player", Toast.LENGTH_SHORT).show();
             String name = data.getStringExtra("name");
             if (hp >= 1) {
@@ -838,7 +927,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             tvHpBot1.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(hp), String.valueOf(hpMaxBeforeFightBot1)));
             hpBeforeFightBot1 = hp;
-            if (hpBeforeFightBot1 <= ZERO) endGame();
+            if (hpBeforeFightBot1 <= ZERO) endGame(idBack);
 
 
             Toast.makeText(this, hpBeforeFightBot1 + " bot1", Toast.LENGTH_SHORT).show();
@@ -855,7 +944,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             tvHpBot2.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(hp), String.valueOf(hpMaxBeforeFightBot2)));
             hpBeforeFightBot2 = hp;
-            if (hpBeforeFightBot2 <= ZERO) endGame();
+            if (hpBeforeFightBot2 <= ZERO) endGame(idBack);
             Toast.makeText(this, hpBeforeFightBot2 + " bot2", Toast.LENGTH_SHORT).show();
         }
 
@@ -891,10 +980,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public void buttonPayPass(HeroClass heroClass, HouseClass houseClass,
                               HeroClass heroClassPassive1, HeroClass heroClassPassive2) {
         if (heroClass.getGold() >= houseClass.costToPass) {
-            if (houseClass.getOwner() == BOT1){
+            if (houseClass.getOwner() == BOT1) {
                 heroClass.setGold(heroClass.getGold() - houseClass.getCostToPass());
                 tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-                if (heroClassPassive1.getId() == BOT1){
+                if (heroClassPassive1.getId() == BOT1) {
                     heroClassPassive1.setGold(heroClassPassive1.getGold() + houseClass.getCostToPass());
                     tvGoldShowBot1.setText(String.valueOf(heroClassPassive1.getGold()));
                 } else {
@@ -905,7 +994,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             } else {
                 heroClass.setGold(heroClass.getGold() - houseClass.getCostToPass());
                 tvGoldShow.setText(String.valueOf(heroClass.getGold()));
-                if (heroClassPassive1.getId() == BOT2){
+                if (heroClassPassive1.getId() == BOT2) {
                     heroClassPassive1.setGold(heroClassPassive1.getGold() + houseClass.getCostToPass());
                     tvGoldShowBot2.setText(String.valueOf(heroClassPassive1.getGold()));
                 } else {
@@ -921,93 +1010,201 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     // SenderStats here
 
-    public void magicShopHelper(HeroClass heroClass){
-        if (heroClass.getId() == PLAYER){
+    public void magicShopHelper(HeroClass heroClass, int randomStat) {
+        if (heroClass.getId() == PLAYER) {
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-        } else if (heroClass.getId() == BOT1){
-            tvHpBot1.setText(getResources().getString(R.string.hp_bar,
-                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
-        } else {
-            tvHpBot2.setText(getResources().getString(R.string.hp_bar,
-                    String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
+            if (randomStat == ONE) tvBotFightingResult.setText(getResources().getString
+                    (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
+                            String.valueOf(heroClass.getStrength())));
+            if (randomStat == TWO) tvBotFightingResult.setText(getResources().getString
+                    (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
+                            String.valueOf(heroClass.getStrength())));
+            if (randomStat == THREE) tvBotFightingResult.setText(getResources().getString
+                    (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
+                            String.valueOf(heroClass.getStrength())));
+            if (randomStat == FOUR) tvBotFightingResult.setText(getResources().getString
+                    (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
+                            String.valueOf(heroClass.getStrength())));
+
+        } else if (heroClass.getId() == BOT1) {
+            if (randomStat == ONE) {
+                tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setStrength(heroClass.getStrength() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
+                                String.valueOf(heroClass.getStrength())));
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpBeforeFightBot1)));
+            } else if (randomStat == TWO) {
+                tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setVitality(heroClass.getVitality() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
+                                String.valueOf(heroClass.getStrength())));
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpBeforeFightBot1)));
+            } else if (randomStat == THREE) {
+                tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setAgility(heroClass.getAgility() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
+                                String.valueOf(heroClass.getStrength())));
+
+            } else if (randomStat == FOUR) {
+                tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setFocus(heroClass.getFocus() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
+                                String.valueOf(heroClass.getStrength())));
+            }
+        } else if (heroClass.getId() == BOT2) {
+
+            if (randomStat == ONE) {
+                tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setStrength(heroClass.getStrength() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
+                                String.valueOf(heroClass.getStrength())));
+                tvHpBot2.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpBeforeFightBot2)));
+            } else if (randomStat == TWO) {
+                tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setVitality(heroClass.getVitality() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
+                                String.valueOf(heroClass.getStrength())));
+                tvHpBot2.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpBeforeFightBot2)));
+            } else if (randomStat == THREE) {
+                tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setAgility(heroClass.getAgility() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
+                                String.valueOf(heroClass.getStrength())));
+
+            } else if (randomStat == FOUR) {
+                tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
+                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                heroClass.setFocus(heroClass.getFocus() + ONE);
+                tvBotFightingResult.setText(getResources().getString
+                        (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
+                                String.valueOf(heroClass.getStrength())));
+            } else if (randomStat == NULL) {
+                tvBotFightingResult.setText(getResources().getString(R.string.nothing_bought,
+                        heroClass.getName()));
+            }
         }
     }
 
+
     public void magicShop(final HeroClass heroClass) {
-        @SuppressLint("ValidFragment") final
-        DialogFragment shop = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-                View view = layoutInflater.inflate(R.layout.shop_layout, null);
-                builder.setView(view);
-                builder.setCancelable(true);
 
-                Button btnStrength = (Button) view.findViewById(R.id.btnStrength);
-                Button btnVitality = (Button) view.findViewById(R.id.btnVitality);
-                Button btnAgility = (Button) view.findViewById(R.id.btnAgility);
-                Button btnFocus = (Button) view.findViewById(R.id.btnFocus);
+        if (heroClass.getId() == PLAYER) {
+            @SuppressLint("ValidFragment") final
+            DialogFragment shop = new DialogFragment() {
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                    View view = layoutInflater.inflate(R.layout.shop_layout, null);
+                    builder.setView(view);
+                    builder.setCancelable(true);
 
-                btnStrength.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        heroClass.setStrength(heroClass.getStrength() + 1);
-                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
-                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
-                        magicShopHelper(heroClass);
-                        Toast.makeText(getActivity(), String.valueOf(heroClass.getStrength()), Toast.LENGTH_LONG).show();
-                        heroClass.setGold(heroClass.getGold() - POTION_COST);
-                        dismiss();
+                    Button btnStrength = (Button) view.findViewById(R.id.btnStrength);
+                    Button btnVitality = (Button) view.findViewById(R.id.btnVitality);
+                    Button btnAgility = (Button) view.findViewById(R.id.btnAgility);
+                    Button btnFocus = (Button) view.findViewById(R.id.btnFocus);
+                    Button btnNothing = (Button) view.findViewById(R.id.btnNothing);
+
+                    if (heroClass.getId() == PLAYER) {
+
+                        btnStrength.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                heroClass.setStrength(heroClass.getStrength() + 1);
+                                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                                hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                                magicShopHelper(heroClass, ONE);
+                                Toast.makeText(getActivity(), String.valueOf(heroClass.getStrength()), Toast.LENGTH_LONG).show();
+                                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                                dismiss();
+
+                            }
+                        });
+
+                        btnVitality.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                heroClass.setVitality(heroClass.getVitality() + 1);
+                                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                                hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                                magicShopHelper(heroClass, TWO);
+                                Toast.makeText(getActivity(), String.valueOf(heroClass.getVitality()), Toast.LENGTH_LONG).show();
+                                heroClass.setGold(heroClass.getGold() - POTION_COST);
+
+                                dismiss();
+                            }
+                        });
+
+                        btnAgility.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                heroClass.setAgility(heroClass.getAgility() + 1);
+                                heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
+                                Toast.makeText(getActivity(), String.valueOf(heroClass.getAgility()), Toast.LENGTH_LONG).show();
+                                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                                magicShopHelper(heroClass, THREE);
+                                dismiss();
+                            }
+                        });
+
+                        btnFocus.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                heroClass.setFocus(heroClass.getFocus() + 1);
+                                heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
+                                Toast.makeText(getActivity(), String.valueOf(heroClass.getFocus()), Toast.LENGTH_LONG).show();
+                                heroClass.setGold(heroClass.getGold() - POTION_COST);
+                                magicShopHelper(heroClass, FOUR);
+                                dismiss();
+                            }
+                        });
+
+                        btnNothing.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dismiss();
+                            }
+                        });
 
                     }
-                });
+                    return builder.create();
 
-                btnVitality.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        heroClass.setVitality(heroClass.getVitality() + 1);
-                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
-                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
-                        magicShopHelper(heroClass);
-                        Toast.makeText(getActivity(), String.valueOf(heroClass.getVitality()), Toast.LENGTH_LONG).show();
-                        heroClass.setGold(heroClass.getGold() - POTION_COST);
-
-                        dismiss();
-                    }
-                });
-
-                btnAgility.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        heroClass.setAgility(heroClass.getAgility() + 1);
-                        heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
-                        Toast.makeText(getActivity(), String.valueOf(heroClass.getAgility()), Toast.LENGTH_LONG).show();
-                        heroClass.setGold(heroClass.getGold() - POTION_COST);
-                        dismiss();
-                    }
-                });
-
-                btnFocus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        heroClass.setFocus(heroClass.getFocus() + 1);
-                        heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
-                        Toast.makeText(getActivity(), String.valueOf(heroClass.getFocus()), Toast.LENGTH_LONG).show();
-                        heroClass.setGold(heroClass.getGold() - POTION_COST);
-                        dismiss();
-                    }
-                });
+                }
 
 
-                return builder.create();
+            };
+            shop.show(getFragmentManager(), "fight result");
+        } else {
+            if (heroClass.getGold() >= POTION_COST) {
+
+
+                magicShopHelper(heroClass, randomAction(ONE, FOUR));
+            } else {
+                magicShopHelper(heroClass, NULL);
 
             }
 
+        }
 
-        };
-        shop.show(getFragmentManager(), "fight result");
 
     }
 
@@ -1065,7 +1262,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 }
             } else if (houseClass.getOwner() == heroClass.getId()) {
 
-                heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                heroClass.setHp(heroClass.getHp() * TWO / FIVE + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot1)
                     heroClass.setHp(hpMaxBeforeFightBot1);
                 tvHpBot1.setText(getResources().getString(R.string.hp_bar,
@@ -1073,7 +1270,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 tvBotFightingResult.setText(getResources().getString(R.string.home, heroClass.getName(), houseClass.getName()));
 
             }
-        } else {
+        } else if (heroClass.getId() == BOT2) {
             if (houseClass.getOwner() == OWNER_NULL) {
                 if (heroClass.getGold() >= houseClass.getHouseCost()) {
                     heroClass.setGold(heroClass.getGold() - houseClass.getHouseCost());
@@ -1123,7 +1320,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 }
             } else if (houseClass.getOwner() == heroClass.getId()) {
 
-                heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                heroClass.setHp(heroClass.getHp() * TWO / FIVE + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot2)
                     heroClass.setHp(hpMaxBeforeFightBot2);
                 tvHpBot2.setText(getResources().getString(R.string.hp_bar,
@@ -1180,7 +1377,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 final Button breakThrough = (Button) view.findViewById(R.id.buttonBreak);
                 buy.setText(getResources().getString(R.string.action_buy, String.valueOf(houseClass.getHouseCost())));
 
-                if (houseClass.getOwner() == OWNER_NULL) {
+                if (houseClass.getOwner() == OWNER_NULL && heroClass.getGold() >= houseClass.getHouseCost()) {
                     payPass.setVisibility(View.GONE);
                     breakThrough.setVisibility(View.GONE);
                     buy.setOnClickListener(new View.OnClickListener() {
@@ -1195,10 +1392,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 }
 
                 if (houseClass.getOwner() == heroClassPassive1.getId()) {
-                    buy.setVisibility(View.INVISIBLE);
+                    buy.setVisibility(View.GONE);
                 }
                 if (houseClass.getOwner() == heroClassPassive2.getId()) {
-                    buy.setVisibility(View.INVISIBLE);
+                    buy.setVisibility(View.GONE);
                 }
 
                 if (houseClass.getOwner() == heroClass.getId()) {
@@ -1208,7 +1405,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                     buy.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            heroClass.setHp(heroClass.getHp() * 2 / 5 + heroClass.getHp());
+                            heroClass.setHp(heroClass.getHp() * TWO / FIVE + heroClass.getHp());
                             if (heroClass.getHp() > hpMaxBeforeFight)
                                 heroClass.setHp(hpMaxBeforeFight);
                             tvHp.setText(getResources().getString(R.string.hp_bar,
@@ -1265,28 +1462,51 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 Button fightStrong = (Button) view.findViewById(R.id.buttonFightStrong);
                 Button fightMedium = (Button) view.findViewById(R.id.buttonfightMedium);
 
-                goAway.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                if (heroClass.getId() == PLAYER) {
+                    goAway.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            stopper = true;
+                            dismiss();
+                        }
+                    });
 
-                        stopper = true;
+                    fightMedium.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
+                        }
+                    });
+
+                    fightStrong.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+                        }
+                    });
+                } else if (heroClass.getId() == BOT1) {
+                    if (heroClass.getHp() >= hpMaxBeforeFightBot1 * TWO / THREE) {
+                        senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
+                        Toast.makeText(getActivity(), getResources().getString(R.string.fight_medium_bot, heroClass.getName()), Toast.LENGTH_SHORT).show();
+                    } else if (heroClass.getHp() == hpMaxBeforeFightBot1) {
+                        senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+                        Toast.makeText(getActivity(), getResources().getString(R.string.fight_hard_bot, heroClass.getName()), Toast.LENGTH_SHORT).show();
+                    } else {
+                        tvBotFightingResult.setText(getResources().getString(R.string.bot_no_risk, heroClass.getName()));
                         dismiss();
                     }
-                });
-
-                fightMedium.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                } else if (heroClass.getId() == BOT2) {
+                    if (heroClass.getHp() >= hpMaxBeforeFightBot2 * TWO / THREE) {
                         senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_STRENGTH_MEDIUM);
-                    }
-                });
-
-                fightStrong.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.fight_medium_bot, heroClass.getName()), Toast.LENGTH_SHORT).show();
+                    } else if (heroClass.getHp() == hpMaxBeforeFightBot2) {
                         senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+                        Toast.makeText(getActivity(), getResources().getString(R.string.fight_hard_bot, heroClass.getName()), Toast.LENGTH_SHORT).show();
+                    } else {
+                        tvBotFightingResult.setText(getResources().getString(R.string.bot_no_risk, heroClass.getName()));
+                        dismiss();
                     }
-                });
+                }
 
                 return builder.create();
 
@@ -1299,124 +1519,171 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     public void jailAction(final HeroClass heroClass) {
 
-        jailChecker = true;
+        jailCheckerPlayer = true;
+        jailCheckerBot1 = true;
+        jailCheckerBot2 = true;
 
-        @SuppressLint("ValidFragment") final
-        DialogFragment jailResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-                View view = layoutInflater.inflate(R.layout.jail_layout, null);
-                builder.setView(view);
-                builder.setCancelable(true);
+        if (heroClass.getId() == PLAYER) {
 
-                final Button diceButton = (Button) view.findViewById(R.id.btnJailDice);
-                if (heroClass.getId() == BOT1 || heroClass.getId() == BOT2) {
+            @SuppressLint("ValidFragment") final
+            DialogFragment jailResult = new DialogFragment() {
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                    View view = layoutInflater.inflate(R.layout.jail_layout, null);
+                    builder.setView(view);
+                    builder.setCancelable(true);
+
+                    final Button diceButton = (Button) view.findViewById(R.id.btnJailDice);
+
+                    diceButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Handler handler = new Handler();
+                            randomAnimation(diceButton, heroClass);
+                            diceButton.setEnabled(false);
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+
+                                    if (step == 1) {
+                                        diceButton.setBackgroundResource(R.drawable.aone);
+                                        if (!jailStaying(heroClass)) {
+                                            try {
+                                                Thread.sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            dismiss();
+                                        }
+                                    } else if (step == 2) {
+                                        diceButton.setBackgroundResource(R.drawable.atwo);
+                                        if (!jailStaying(heroClass)) {
+                                            try {
+                                                Thread.sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            dismiss();
+                                        }
+                                    } else if (step == 3) {
+                                        diceButton.setBackgroundResource(R.drawable.athree);
+                                        if (!jailStaying(heroClass)) {
+                                            try {
+                                                Thread.sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            dismiss();
+                                        }
+                                    } else if (step == 4) {
+                                        diceButton.setBackgroundResource(R.drawable.afour);
+                                        if (!jailStaying(heroClass)) {
+                                            try {
+                                                Thread.sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            dismiss();
+                                        }
+                                    } else if (step == 5) {
+                                        diceButton.setBackgroundResource(R.drawable.afive);
+                                        if (!jailStaying(heroClass)) {
+                                            try {
+                                                Thread.sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            dismiss();
+                                        }
+                                    } else if (step == 6) {
+                                        diceButton.setBackgroundResource(R.drawable.asix);
+                                        try {
+                                            Thread.sleep(2000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        Toast.makeText(getActivity(), "You are free, luck with you", Toast.LENGTH_LONG).show();
+                                        dismiss();
+                                        attempts = 0;
+                                        jailCheckerPlayer = false;
+                                    }
+                                    diceButton.setEnabled(true);
+
+                                }
+                            }, timeToWait);
+
+
+                        }
+                    });
+
+                    return builder.create();
 
                 }
 
-                diceButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Handler handler = new Handler();
-                        randomAnimation(diceButton, heroClass);
-                        diceButton.setEnabled(false);
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
+            };
+            jailResult.show(getFragmentManager(), "Jail result");
+        } else if (heroClass.getId() == BOT1) {
 
-                                if (step == 1) {
-                                    diceButton.setBackgroundResource(R.drawable.aone);
-                                    if (!jailStaying(heroClass)) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dismiss();
-                                    }
-                                } else if (step == 2) {
-                                    diceButton.setBackgroundResource(R.drawable.atwo);
-                                    if (!jailStaying(heroClass)) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dismiss();
-                                    }
-                                } else if (step == 3) {
-                                    diceButton.setBackgroundResource(R.drawable.athree);
-                                    if (!jailStaying(heroClass)) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dismiss();
-                                    }
-                                } else if (step == 4) {
-                                    diceButton.setBackgroundResource(R.drawable.afour);
-                                    if (!jailStaying(heroClass)) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dismiss();
-                                    }
-                                } else if (step == 5) {
-                                    diceButton.setBackgroundResource(R.drawable.afive);
-                                    if (!jailStaying(heroClass)) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        dismiss();
-                                    }
-                                } else if (step == 6) {
-                                    diceButton.setBackgroundResource(R.drawable.asix);
-                                    try {
-                                        Thread.sleep(2000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    Toast.makeText(getActivity(), "You are free, luck with you", Toast.LENGTH_LONG).show();
-                                    dismiss();
-                                    attempts = 0;
-                                    jailChecker = false;
-                                }
-                                diceButton.setEnabled(true);
+            Toast.makeText(this, "sho delat", Toast.LENGTH_SHORT).show();
+            String[] massive = {null, null, null};
+            for (int i = 0; i <= 3; i++) {
+                if (i == THREE) {
+                    tvBotFightingResult.setText(getResources().getString(R.string.bot_no_luck, heroClass.getName(), massive[NULL], massive[ONE], massive[TWO]));
+                    heroClass.setHp(heroClass.getHp() - DAMAGE_JAIL);
 
-                            }
-                        }, timeToWait);
-
-
+                } else {
+                    int randomStatJail = randomAction(ONE, SIX);
+                    massive[i] = String.valueOf(randomStatJail);
+                    if (randomStatJail == 6) {
+                        tvBotFightingResult.setText(getResources().getString(R.string.bot_got_lucky, heroClass.getName()));
+                        i = FOUR;
+                        jailCheckerBot1 = false;
                     }
-                });
+                }
 
-                return builder.create();
 
             }
 
-        };
-        jailResult.show(getFragmentManager(), "Jail result");
+        } else if (heroClass.getId() == BOT2) {
+
+            Toast.makeText(this, "sho delat", Toast.LENGTH_SHORT).show();
+            String[] massive = {null, null, null};
+            for (int i = 0; i <= 3; i++) {
+                if (i == THREE) {
+                    tvBotFightingResult.setText(getResources().getString(R.string.bot_no_luck, heroClass.getName(), massive[NULL], massive[ONE], massive[TWO]));
+                    heroClass.setHp(heroClass.getHp() - DAMAGE_JAIL);
+
+                } else {
+                    int randomStatJail = randomAction(ONE, SIX);
+                    massive[i] = String.valueOf(randomStatJail);
+                    if (randomStatJail == 6) {
+                        tvBotFightingResult.setText(getResources().getString(R.string.bot_got_lucky, heroClass.getName()));
+                        i = FOUR;
+                        jailCheckerBot2 = false;
+                    }
+                }
+
+
+            }
+
+        }
+
 
     }
 
     public boolean jailStaying(HeroClass heroClass) {
         attempts++;
         Toast.makeText(this, "You have " + (ALL_ATTEMPTS - attempts) + " attempts", Toast.LENGTH_SHORT).show();
-        if (attempts >= 3) {
+        if (attempts >= THREE) {
             heroClass.setHp(heroClass.getHp() - DAMAGE_JAIL);
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
 
-            if (heroClass.getHp() <= 0) {
-                endGame();
+            if (heroClass.getHp() <= NULL) {
+                endGame(heroClass.getId());
             }
-            Toast.makeText(this, "No luck today, your health goind down", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No luck today, your health going down", Toast.LENGTH_LONG).show();
             attempts = 0;
             return false;
         }
@@ -1424,100 +1691,179 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         return true;
     }
 
-    public void endGame() {
-        @SuppressLint("ValidFragment") final
-        DialogFragment fightResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                setCancelable(false);
-                builder.setMessage(R.string.title_over);
+    public void endGame(int id) {
 
-                builder.setPositiveButton(R.string.game_over,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(GameMap.this, MainActivity.class);
-                                startActivity(intent);
+        if (id == PLAYER) {
+            @SuppressLint("ValidFragment") final
+            DialogFragment fightResult = new DialogFragment() {
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    setCancelable(false);
+                    builder.setMessage(R.string.title_over);
+
+                    builder.setPositiveButton(R.string.game_over,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(GameMap.this, MainActivity.class);
+                                    startActivity(intent);
 
 
-                            }
-                        });
+                                }
+                            });
 
-                return builder.create();
-            }
-        };
+                    return builder.create();
+                }
+            };
 
-        fightResult.show(getFragmentManager(), "fight result");
+            fightResult.show(getFragmentManager(), "fight result");
+        } else if (id == BOT1) {
+            tvBotFightingResult.setText(getResources().getString(R.string.bot_dead, botName1));
+            tvGoldShowBot1.setText("");
+            tvBotName1.setText(R.string.dead_end);
+            tvExpBot1.setText("");
+            botDead1 = true;
+
+
+
+        } else if (id == BOT2) {
+            tvBotFightingResult.setText(getResources().getString(R.string.bot_dead, botName2));
+            tvGoldShowBot1.setText("");
+            tvBotName1.setText(R.string.dead_end);
+            tvExpBot1.setText("");
+            botDead2 = true;
+        }
+        if (tvBotName1.getText().equals(dead) && tvBotName2.getText().equals(dead)){
+            @SuppressLint("ValidFragment") final
+            DialogFragment fightResult = new DialogFragment() {
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    setCancelable(false);
+                    builder.setMessage(R.string.winner);
+
+                    builder.setPositiveButton(R.string.celebrate,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(GameMap.this, MainActivity.class);
+                                    startActivity(intent);
+
+
+                                }
+                            });
+
+                    return builder.create();
+                }
+            };
+
+            fightResult.show(getFragmentManager(), "fight result");
+
+        }
 
     } // alert for end game
 
     public void secretAreaAction(final HeroClass heroClass) {
-        @SuppressLint("ValidFragment") final
-        DialogFragment jailResult = new DialogFragment() {
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-                View view = layoutInflater.inflate(R.layout.secret_layout, null);
-                builder.setView(view);
-                builder.setCancelable(true);
+        if (heroClass.getId() == PLAYER) {
 
-                final Button btnPlay = (Button) view.findViewById(R.id.btnPlay);
-                final Button btnExit = (Button) view.findViewById(R.id.btnExit);
+            @SuppressLint("ValidFragment") final
+            DialogFragment jailResult = new DialogFragment() {
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                    View view = layoutInflater.inflate(R.layout.secret_layout, null);
+                    builder.setView(view);
+                    builder.setCancelable(true);
 
-                btnPlay.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        actionChooser(randomAction(), heroClass);
-                        dismiss();
+                    final Button btnPlay = (Button) view.findViewById(R.id.btnPlay);
+                    final Button btnExit = (Button) view.findViewById(R.id.btnExit);
+
+                    if (heroClass.getId() == PLAYER) {
+
+                        btnPlay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                actionChooser(randomAction(ONE, SIX), heroClass);
+                                dismiss();
+                            }
+                        });
+
+                        btnExit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dismiss();
+                                Toast.makeText(getActivity(), R.string.choice, Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     }
-                });
+                    return builder.create();
+                }
 
-                btnExit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dismiss();
-                        Toast.makeText(getActivity(), R.string.choice, Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                return builder.create();
-
+            };
+            jailResult.show(getFragmentManager(), "Secret result");
+        } else if (heroClass.getId() == BOT1) {
+            if (heroClass.getHp() >= hpMaxBeforeFightBot1 * TWO / THREE) {
+                actionChooser(randomAction(ONE, FOUR), heroClass);
+                tvBotFightingResult.setText(getResources().getString(R.string.secret_btn_bot, heroClass.getName()));
+            } else {
+                tvBotFightingResult.setText(getResources().getString(R.string.bot_no_risk, heroClass.getName()));
             }
-
-        };
-        jailResult.show(getFragmentManager(), "Secret result");
+        } else if (heroClass.getId() == BOT2) {
+            if (heroClass.getHp() >= hpMaxBeforeFightBot2 * TWO / THREE) {
+                actionChooser(randomAction(ONE, FOUR), heroClass);
+                tvBotFightingResult.setText(getResources().getString(R.string.secret_btn_bot, heroClass.getName()));
+            } else {
+                tvBotFightingResult.setText(getResources().getString(R.string.bot_no_risk, heroClass.getName()));
+            }
+        }
 
     }
 
-    public int randomAction() {
+    public int randomAction(int from, int till) {
 
-        int min = 1;
-        int max = 6;
         Random random = new Random();
-        return random.nextInt(max - min + 1) + min;
+        return random.nextInt(till - from + 1) + from;
     }
 
     public void actionChooser(int randomNumber, HeroClass heroClass) {
-        if (randomNumber == 1) {
-            senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
-            Toast.makeText(this, "you open the eyes after some time, and see easy enemy. Fight", Toast.LENGTH_LONG).show();
-        } else if (randomNumber == 2) {
-            senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
-            Toast.makeText(this, "you open the eyes after some time and see medium monster", Toast.LENGTH_LONG).show();
-        } else if (randomNumber == 3) {
-            magicShop(heroClass);
-            Toast.makeText(this, "That strange but you in magic shop, you can boy some potion", Toast.LENGTH_LONG).show();
-        } else if (randomNumber == 4) {
-            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
-            Toast.makeText(this, "you open the eyes after some time and see STRONG monster", Toast.LENGTH_LONG).show();
-        } else if (randomNumber == 5) {
-            senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
-            Toast.makeText(this, "you open the eyes after some time and see BIGBOSS", Toast.LENGTH_LONG).show();
-        } else if (randomNumber == 6) {
-            arenaAction(heroClass);
-            Toast.makeText(this, " that strange but you stay in middle of arena", Toast.LENGTH_LONG).show();
+        if (heroClass.getId() == PLAYER) {
+            if (randomNumber == ONE) {
+                senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+                Toast.makeText(this, "you open the eyes after some time, and see easy enemy. Fight", Toast.LENGTH_LONG).show();
+            } else if (randomNumber == TWO) {
+                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+                Toast.makeText(this, "you open the eyes after some time and see medium monster", Toast.LENGTH_LONG).show();
+            } else if (randomNumber == THREE) {
+                magicShop(heroClass);
+                Toast.makeText(this, "That strange but you in magic shop, you can boy some potion", Toast.LENGTH_LONG).show();
+            } else if (randomNumber == FOUR) {
+                senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
+                Toast.makeText(this, "you open the eyes after some time and see STRONG monster", Toast.LENGTH_LONG).show();
+            } else if (randomNumber == FIVE) {
+                senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+                Toast.makeText(this, "you open the eyes after some time and see BIGBOSS", Toast.LENGTH_LONG).show();
+            } else if (randomNumber == SIX) {
+                arenaAction(heroClass);
+                Toast.makeText(this, " that strange but you stay in middle of arena", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            if (randomNumber == ONE) {
+                senderStats(heroClass, MONSTER_EASY, MONSTER_BONUS_NULL);
+            } else if (randomNumber == TWO) {
+                senderStats(heroClass, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
+            } else if (randomNumber == THREE) {
+                magicShop(heroClass);
+            } else if (randomNumber == FOUR) {
+                senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_NULL);
+            } else if (randomNumber == FIVE) {
+                senderStats(heroClass, MONSTER_HARD, MONSTER_BONUS_STRENGTH_HARDCORE);
+            } else if (randomNumber == SIX) {
+                arenaAction(heroClass);
+            }
+
         }
 
     }

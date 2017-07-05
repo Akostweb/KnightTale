@@ -471,13 +471,21 @@
                     android:gravity="center"
                     android:background="@drawable/aone" />
                 <Button
-                    android:id="@+id/ivNext"
+                    android:id="@+id/ivBot1"
                     android:layout_width="@dimen/box_button"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:visibility="invisible"
                     android:gravity="center"
                     android:background="@drawable/next" />
+                <Button
+                    android:id="@+id/ivBot2"
+                    android:layout_width="@dimen/box_button"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:background="@drawable/jail" />
 
 
             </FrameLayout>
