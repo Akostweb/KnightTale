@@ -29,8 +29,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     final public static String CASTLE_NAME = "Castle black stone";
     final public static int OWNER_NULL = 0;
 
+    final public static int EXPERIENCE_TO_LVL = 50;
+    final public static int EXPERIENCE_ADD = 100;
     final public static int HP_PERCENTAGE = 30;
-    final public static int HP_PERCENTAGE_ONE_HUNDREAD = 100;
+    final public static int HP_PERCENTAGE_ONE_HUNDRED = 100;
     final public static int GOLD_FOR_ROUND = 5;
 
 
@@ -89,10 +91,12 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     String playerName, botName1, botName2, dead;
     int attempts;
     boolean stopper, jailCheckerPlayer, jailCheckerBot1, jailCheckerBot2, botDead1, botDead2;
-    int step, stepbot1, stepbot2, timeToWait;
+    int step, stepbot1, stepbot2, timeToWait, maxRound;
 
     TextView tvTopName, tvHp, tvBotName1, tvHpBot1, tvBotName2, tvHpBot2, tvGoldShow, tvExp, tvGoldShowBot1, tvGoldShowBot2, tvExpBot1, tvExpBot2, tvBotFightingResult;
     Button ivDice, ivBot1, ivBot2, btnLvlPlusStrength, btnLvlPlusVitality, btnLvlPlusAgility, btnLvlPlusFocus;
+    int hpBeforeFight, hpMaxBeforeFight, hpMaxBeforeFightBot1, hpMaxBeforeFightBot2, hpBeforeFightBot1, hpBeforeFightBot2;
+    int playerMaxExperience, botMaxExperience1, botMaxExperience2, playerExp, botExp1, botExp2, statAdded;
     ImageView iv11;
     ImageView iv12;
     ImageView iv13;
@@ -141,9 +145,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     ImageView iv161;
     ImageView iv162;
     ImageView iv163;
+    TextView tvLvlUp;
 
-    int hpBeforeFight, hpMaxBeforeFight, hpMaxBeforeFightBot1, hpMaxBeforeFightBot2, hpBeforeFightBot1, hpBeforeFightBot2;
-    int maxExperience, experience, lvl;
 
     private String[] nameArray = {"Asshole", "Cock", "Dick", "Tits", "Bobby", "Hump", "Bravo", "super", "black", "gammy"};
 
@@ -159,6 +162,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         btnLvlPlusStrength = (Button) findViewById(R.id.btnLvlPlusStrength);
         btnLvlPlusAgility = (Button) findViewById(R.id.btnLvlPlusAgility);
         btnLvlPlusFocus = (Button) findViewById(R.id.btnLvlPlusFocus);
+
+        tvLvlUp = (TextView) findViewById(R.id.tvLvlUp);
 
 
         //all step dots
@@ -285,9 +290,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         ivDice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (jailCheckerPlayer) {
+                enterMaxRound(player, bot1, bot2);
+                if (playerExp >= playerMaxExperience) {
+                    expChecker(player);
+                } else if (jailCheckerPlayer) {
                     jailAction(player);
                 } else {
+
                     Handler handler = new Handler();
                     randomAnimation(ivDice, player);
                     handler.postDelayed(new Runnable() {
@@ -299,14 +308,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                             if (botDead1) {
                                 ivDice.setVisibility(View.INVISIBLE);
                                 ivBot2.setVisibility(View.VISIBLE);
+                                ivBot2.setBackgroundResource(R.drawable.knighttwo);
                                 //ivBot1.setVisibility(View.GONE);
                             } else if (botDead2) {
                                 ivDice.setVisibility(View.INVISIBLE);
                                 ivBot1.setVisibility(View.VISIBLE);
+                                ivBot1.setBackgroundResource(R.drawable.knightone);
                                 //ivBot2.setVisibility(View.GONE);
-                            } else if (!botDead1 && !botDead2){
+                            } else if (!botDead1 && !botDead2) {
                                 ivDice.setVisibility(View.INVISIBLE);
                                 ivBot1.setVisibility(View.VISIBLE);
+                                ivBot1.setBackgroundResource(R.drawable.knightone);
                                 ivBot2.setVisibility(View.INVISIBLE);
                             }
 
@@ -320,9 +332,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         ivBot1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                enterMaxRound(player, bot1, bot2);
                 if (jailCheckerBot1) {
                     jailAction(bot1);
                 } else {
+                    if (botExp1 >= botMaxExperience1) {
+                        expChecker(bot1);
+                    }
                     ivBot1.setEnabled(false);
                     randomAnimation(ivBot1, bot1);
                     Handler handler = new Handler();
@@ -333,16 +349,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                             stepAction(bot1, outpost, tavern, tower, fortress, castle, player, bot2);
 
                             if (botDead1) {
-                                //ivBot1.setVisibility(View.GONE);
                                 ivBot2.setVisibility(View.VISIBLE);
                                 ivDice.setVisibility(View.INVISIBLE);
+                                ivBot2.setBackgroundResource(R.drawable.knighttwo);
                             } else if (botDead2) {
-                                //ivBot2.setVisibility(View.GONE);
                                 ivDice.setVisibility(View.VISIBLE);
+                                ivDice.setBackgroundResource(R.drawable.knight);
                                 ivBot1.setVisibility(View.INVISIBLE);
                                 ivBot1.setEnabled(true);
-                            } else if (!botDead1 && !botDead2){
+                            } else if (!botDead1 && !botDead2) {
                                 ivBot2.setVisibility(View.VISIBLE);
+                                ivBot2.setBackgroundResource(R.drawable.knighttwo);
                                 ivDice.setVisibility(View.INVISIBLE);
                                 ivBot1.setVisibility(View.INVISIBLE);
                                 ivBot1.setEnabled(true);
@@ -361,9 +378,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         ivBot2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                enterMaxRound(player, bot1, bot2);
                 if (jailCheckerBot2) {
                     jailAction(bot2);
                 } else {
+                    if (botExp2 >= botMaxExperience2) {
+                        expChecker(bot2);
+                    }
                     ivBot2.setEnabled(false);
                     randomAnimation(ivBot2, bot2);
                     Handler handler = new Handler();
@@ -376,14 +397,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                                 //ivBot1.setVisibility(View.GONE);
                                 ivBot2.setVisibility(View.INVISIBLE);
                                 ivDice.setVisibility(View.VISIBLE);
-                                ivBot1.setEnabled(true);
+                                ivDice.setBackgroundResource(R.drawable.knight);
+                                ivBot2.setEnabled(true);
                             } else if (botDead2) {
                                 //ivBot2.setVisibility(View.GONE);
                                 ivDice.setVisibility(View.VISIBLE);
+                                ivDice.setBackgroundResource(R.drawable.knight);
                                 ivBot1.setVisibility(View.INVISIBLE);
-                            } else if (!botDead1 && !botDead2){
+                            } else if (!botDead1 && !botDead2) {
                                 ivBot2.setVisibility(View.INVISIBLE);
                                 ivDice.setVisibility(View.VISIBLE);
+                                ivDice.setBackgroundResource(R.drawable.knight);
                                 ivBot1.setVisibility(View.INVISIBLE);
                                 ivBot2.setEnabled(true);
 
@@ -396,6 +420,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             }
         });
+    }
+
+    public void enterMaxRound(HeroClass heroClass, HeroClass bot, HeroClass bot1) {
+        int[] massive = {heroClass.getRoundCount(), bot.getRoundCount(), bot1.getRoundCount()};
+        maxRound = 0;
+        for (int i = 0; i < 3; i++) {
+            if (maxRound < massive[i]) {
+                maxRound = massive[i];
+            }
+        }
     }
 
     //its deleting, check for round and drawing new dot
@@ -435,7 +469,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 iv141.setBackgroundResource(R.drawable.transparent);
             } else if (heroClass.getStep() == 15) {
                 iv151.setBackgroundResource(R.drawable.transparent);
-            } else if (heroClass.getStep() == 16){
+            } else if (heroClass.getStep() >= 16) {
                 iv161.setBackgroundResource(R.drawable.transparent);
             }
         } else if (heroClass.getId() == BOT1) {
@@ -469,7 +503,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 iv142.setBackgroundResource(R.drawable.transparent);
             } else if (heroClass.getStep() == 15) {
                 iv152.setBackgroundResource(R.drawable.transparent);
-            } else if (heroClass.getStep() == 16){
+            } else if (heroClass.getStep() >= 16) {
                 iv162.setBackgroundResource(R.drawable.transparent);
             }
 
@@ -504,7 +538,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 iv143.setBackgroundResource(R.drawable.transparent);
             } else if (heroClass.getStep() == 15) {
                 iv153.setBackgroundResource(R.drawable.transparent);
-            } else if (heroClass.getStep() == 16){
+            } else if (heroClass.getStep() >= 16) {
                 iv163.setBackgroundResource(R.drawable.transparent);
             }
 
@@ -518,13 +552,15 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
 
     public void stepChecker(HeroClass heroClass, int step) {
+
+
         heroClass.setStep(heroClass.getStep() + step);
         if (heroClass.getStep() > STEP_MAX) {
             heroClass.setRoundCount(heroClass.getRoundCount() + ONE);
             heroClass.setStep(heroClass.getStep() - STEP_MAX);
             if (heroClass.getId() == PLAYER) {
 
-                heroClass.setHp((hpMaxBeforeFight * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDREAD) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFight * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDRED) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFight) heroClass.setHp(hpMaxBeforeFight);
                 tvHp.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
@@ -534,7 +570,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             } else if (heroClass.getId() == BOT1) {
 
-                heroClass.setHp((hpMaxBeforeFightBot1 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDREAD) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFightBot1 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDRED) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot1) heroClass.setHp(hpMaxBeforeFightBot1);
                 tvHpBot1.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
@@ -544,7 +580,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             } else if (heroClass.getId() == BOT2) {
 
-                heroClass.setHp((hpMaxBeforeFightBot2 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDREAD) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFightBot2 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDRED) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot2) heroClass.setHp(hpMaxBeforeFightBot2);
                 tvHpBot2.setText(getResources().getString(R.string.hp_bar,
                         String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
@@ -553,117 +589,155 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
             }
 
-            expChecker(heroClass);
-
         }
 
+        expChecker(heroClass);
         stepDotPlayerNew(heroClass);
+    }
+
+    public void expChecker(HeroClass heroClass) {
+        if (heroClass.getId() == PLAYER) {
+            heroClass.setExp(playerExp);
+            tvExp.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(playerMaxExperience)));
+            if (heroClass.getExp() >= playerMaxExperience) {
+                heroClass.setExp(heroClass.getExp() - playerMaxExperience);
+                heroClass.setLvl(heroClass.getLvl() + ONE);
+                playerExp = NULL;
+                playerMaxExperience = playerMaxExperience + EXPERIENCE_ADD;
+                tvExp.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(playerMaxExperience)));
+                statAdderPlayer(heroClass);
+
+            }
+        } else if (heroClass.getId() == BOT1) {
+            heroClass.setExp(botExp1);
+            tvExpBot1.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(botMaxExperience1)));
+            if (heroClass.getExp() >= botMaxExperience1) {
+                heroClass.setExp(heroClass.getExp() - botMaxExperience1);
+                heroClass.setLvl(heroClass.getLvl() + ONE);
+                botExp1 = NULL;
+                statAddedBot(heroClass, randomAction(ONE, FOUR));
+                botMaxExperience1 = botMaxExperience1 + EXPERIENCE_ADD;
+                tvExpBot1.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(botMaxExperience1)));
+            }
+        } else if (heroClass.getId() == BOT2) {
+            heroClass.setExp(botExp2);
+            tvExpBot2.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(botMaxExperience2)));
+            if (heroClass.getExp() >= botMaxExperience2) {
+                heroClass.setExp(heroClass.getExp() - botMaxExperience2);
+                heroClass.setLvl(heroClass.getLvl() + ONE);
+                botExp2 = NULL;
+                statAddedBot(heroClass, randomAction(ONE, FOUR));
+                botMaxExperience2 = botMaxExperience2 + EXPERIENCE_ADD;
+                tvExpBot2.setText(getResources().getString(R.string.experience, String.valueOf(heroClass.getExp()), String.valueOf(botMaxExperience2)));
+            }
+        }
+
     }
 
     public void stepDotPlayerNew(HeroClass heroClass) {
 
         if (heroClass.getId() == PLAYER) {
             if (heroClass.getStep() == 1) {
-                iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv11.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 2) {
-                iv21.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv21.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 3) {
-                iv31.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv31.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 4) {
-                iv41.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv41.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 5) {
-                iv51.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv51.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 6) {
-                iv61.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv61.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 7) {
-                iv71.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv71.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 8) {
-                iv81.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv81.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 9) {
-                iv91.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv91.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 10) {
-                iv101.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv101.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 11) {
-                iv111.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv111.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 12) {
-                iv121.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv121.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 13) {
-                iv131.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv131.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 14) {
-                iv141.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv141.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 15) {
-                iv151.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv151.setBackgroundResource(R.drawable.knight);
             } else if (heroClass.getStep() == 16) {
-                iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv161.setBackgroundResource(R.drawable.knight);
             }
         } else if (heroClass.getId() == BOT1) {
             if (heroClass.getStep() == 1) {
-                iv12.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv12.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 2) {
-                iv22.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv22.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 3) {
-                iv32.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv32.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 4) {
-                iv42.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv42.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 5) {
-                iv52.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv52.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 6) {
-                iv62.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv62.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 7) {
-                iv72.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv72.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 8) {
-                iv82.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv82.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 9) {
-                iv92.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv92.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 10) {
-                iv102.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv102.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 11) {
-                iv112.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv112.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 12) {
-                iv122.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv122.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 13) {
-                iv132.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv132.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 14) {
-                iv142.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv142.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 15) {
-                iv152.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv152.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 16) {
-                iv161.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv161.setBackgroundResource(R.drawable.knightone);
             }
 
         } else if (heroClass.getId() == BOT2) {
             if (heroClass.getStep() == 1) {
-                iv13.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv13.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 2) {
-                iv23.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv23.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 3) {
-                iv33.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv33.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 4) {
-                iv43.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv43.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 5) {
-                iv53.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv53.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 6) {
-                iv63.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv63.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 7) {
-                iv73.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv73.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 8) {
-                iv83.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv83.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 9) {
-                iv93.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv93.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 10) {
-                iv103.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv103.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 11) {
-                iv113.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv113.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 12) {
-                iv123.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv123.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 13) {
-                iv133.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv133.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 14) {
-                iv143.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv143.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 15) {
-                iv153.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv153.setBackgroundResource(R.drawable.knighttwo);
             } else if (heroClass.getStep() == 16) {
-                iv163.setBackgroundResource(R.drawable.shieldsuperthumb);
+                iv163.setBackgroundResource(R.drawable.knighttwo);
             }
         }
 
@@ -760,6 +834,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     public void stepAction(HeroClass heroClassTurn, HouseClass outpost, HouseClass tavern,
                            HouseClass tower, HouseClass fortress, HouseClass castle, HeroClass heroClassPassive1, HeroClass heroClassPassive2) {
         if (heroClassTurn.getStep() == 1) {
+            heroClassTurn.setGold(heroClassTurn.getGold() + FIVE + maxRound);
+            if (heroClassTurn.getId() == PLAYER)
+                tvGoldShow.setText(String.valueOf(heroClassTurn.getGold()));
+            if (heroClassTurn.getId() == BOT1)
+                tvGoldShowBot1.setText(String.valueOf(heroClassTurn.getGold()));
+            if (heroClassTurn.getId() == BOT2)
+                tvGoldShowBot2.setText(String.valueOf(heroClassTurn.getGold()));
+
+            Toast.makeText(this, "Extra GOLD!!!", Toast.LENGTH_SHORT).show();
+
 
         } else if (heroClassTurn.getStep() == OUTPOST) {
 
@@ -832,9 +916,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
             if (stopper) arenaAction(heroClassTurn);
 
-            Toast.makeText(this, " bitva budet", Toast.LENGTH_SHORT).show();
-
-
         } else if (heroClassTurn.getStep() == 14) {
 
             senderStats(heroClassTurn, MONSTER_MEDIUM, MONSTER_BONUS_NULL);
@@ -856,7 +937,9 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     } // main method for senderStats and houseAction
 
     public void senderStats(HeroClass heroClass, int lvl, int arena) {
+
         Intent intent = new Intent(GameMap.this, FightActivity.class);
+
         if (heroClass.id == PLAYER) heroClass.setHp(hpBeforeFight);
         if (heroClass.id == BOT1) heroClass.setHp(hpBeforeFightBot1);
         if (heroClass.id == BOT2) heroClass.setHp(hpBeforeFightBot2);
@@ -866,7 +949,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         intent.putExtra("agility", heroClass.getAgility());
         intent.putExtra("focus", heroClass.getFocus());
         intent.putExtra("hp", heroClass.getHp());
-        intent.putExtra("roundCount", heroClass.getRoundCount());
+        intent.putExtra("roundCount", maxRound);
         intent.putExtra("lvl", lvl);
         intent.putExtra("lvl monster", arena);
         intent.putExtra("id", heroClass.getId());
@@ -884,8 +967,11 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             hpBeforeFightBot2 = heroClass.getHp();
             hpMaxBeforeFightBot2 = heroClass.vitality * VITALITY_BONUS_HP +
                     heroClass.strength * STRENGTH_BONUS_HP;
+
         }
 
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivityForResult(intent, 1);
 
     } //send stats to fight activity
@@ -898,13 +984,16 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         }
         int hp = Integer.parseInt(data.getStringExtra("hp1"));
         int idBack = Integer.parseInt(data.getStringExtra("id1"));
+        int exp = Integer.parseInt(data.getStringExtra("exp"));
+        Toast.makeText(this, " expa = " + exp, Toast.LENGTH_SHORT).show();
 
         if (idBack == PLAYER) {
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(hp), String.valueOf(hpMaxBeforeFight)));
             hpBeforeFight = hp;
+            playerExp = playerExp + exp;
+            tvExp.setText(getResources().getString(R.string.experience, String.valueOf(playerExp), String.valueOf(playerMaxExperience)));
             if (hpBeforeFight <= ZERO) endGame(idBack);
-            Toast.makeText(this, hpBeforeFight + " player", Toast.LENGTH_SHORT).show();
             String name = data.getStringExtra("name");
             if (hp >= 1) {
                 int hpDamaged = Integer.parseInt(data.getStringExtra("hpDamaged"));
@@ -918,6 +1007,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
         } else if (idBack == BOT1) {
             String name = data.getStringExtra("name");
+            botExp1 = botExp1 + exp;
+            tvExpBot1.setText(getResources().getString(R.string.experience, String.valueOf(botExp1), String.valueOf(botMaxExperience1)));
             if (hp >= 1) {
                 int hpDamaged = Integer.parseInt(data.getStringExtra("hpDamaged"));
                 int hpLost = Integer.parseInt(data.getStringExtra("hpLost"));
@@ -932,10 +1023,10 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             hpBeforeFightBot1 = hp;
             if (hpBeforeFightBot1 <= ZERO) endGame(idBack);
 
-
-            Toast.makeText(this, hpBeforeFightBot1 + " bot1", Toast.LENGTH_SHORT).show();
         } else if (idBack == BOT2) {
             String name = data.getStringExtra("name");
+            botExp2 = botExp2 + exp;
+            tvExpBot2.setText(getResources().getString(R.string.experience, String.valueOf(botExp2), String.valueOf(botMaxExperience2)));
             if (hp >= 1) {
                 int hpDamaged = Integer.parseInt(data.getStringExtra("hpDamaged"));
                 int hpLost = Integer.parseInt(data.getStringExtra("hpLost"));
@@ -948,7 +1039,6 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                     String.valueOf(hp), String.valueOf(hpMaxBeforeFightBot2)));
             hpBeforeFightBot2 = hp;
             if (hpBeforeFightBot2 <= ZERO) endGame(idBack);
-            Toast.makeText(this, hpBeforeFightBot2 + " bot2", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -1017,24 +1107,14 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         if (heroClass.getId() == PLAYER) {
             tvHp.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
-            if (randomStat == ONE) tvBotFightingResult.setText(getResources().getString
-                    (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
-                            String.valueOf(heroClass.getStrength())));
-            if (randomStat == TWO) tvBotFightingResult.setText(getResources().getString
-                    (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
-                            String.valueOf(heroClass.getStrength())));
-            if (randomStat == THREE) tvBotFightingResult.setText(getResources().getString
-                    (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
-                            String.valueOf(heroClass.getStrength())));
-            if (randomStat == FOUR) tvBotFightingResult.setText(getResources().getString
-                    (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
-                            String.valueOf(heroClass.getStrength())));
 
         } else if (heroClass.getId() == BOT1) {
             if (randomStat == ONE) {
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setStrength(heroClass.getStrength() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot1 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
                                 String.valueOf(heroClass.getStrength())));
@@ -1044,6 +1124,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setVitality(heroClass.getVitality() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot1 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
                                 String.valueOf(heroClass.getStrength())));
@@ -1053,6 +1135,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setAgility(heroClass.getAgility() + ONE);
+                heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
                                 String.valueOf(heroClass.getStrength())));
@@ -1061,6 +1144,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot1.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setFocus(heroClass.getFocus() + ONE);
+                heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
                                 String.valueOf(heroClass.getStrength())));
@@ -1071,6 +1155,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setStrength(heroClass.getStrength() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.strength),
                                 String.valueOf(heroClass.getStrength())));
@@ -1080,6 +1166,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setVitality(heroClass.getVitality() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.vitality),
                                 String.valueOf(heroClass.getStrength())));
@@ -1089,6 +1177,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setAgility(heroClass.getAgility() + ONE);
+                heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.agility),
                                 String.valueOf(heroClass.getStrength())));
@@ -1097,6 +1186,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 heroClass.setGold(heroClass.getGold() - POTION_COST);
                 tvGoldShowBot2.setText(String.valueOf(heroClass.getGold()));
                 heroClass.setFocus(heroClass.getFocus() + ONE);
+                heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
                 tvBotFightingResult.setText(getResources().getString
                         (R.string.buy_stat, heroClass.getName(), getString(R.string.focus),
                                 String.valueOf(heroClass.getStrength())));
@@ -1325,7 +1415,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
                 }
             } else if (houseClass.getOwner() == heroClass.getId()) {
 
-                heroClass.setHp((hpMaxBeforeFightBot2 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDREAD) + heroClass.getHp());
+                heroClass.setHp((hpMaxBeforeFightBot2 * HP_PERCENTAGE / HP_PERCENTAGE_ONE_HUNDRED) + heroClass.getHp());
                 if (heroClass.getHp() > hpMaxBeforeFightBot2)
                     heroClass.setHp(hpMaxBeforeFightBot2);
                 tvHpBot2.setText(getResources().getString(R.string.hp_bar,
@@ -1915,13 +2005,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         hero.setLvl(1);
         hpBeforeFight = hero.getHp();
         hpMaxBeforeFight = hero.getHp();
-        maxExperience = 1000 * hero.getLvl();
-        experience = 0;
+        playerMaxExperience = EXPERIENCE_TO_LVL;
+        playerExp = 0;
         fillText(hero);
     }
 
     public void fillText(HeroClass heroClass) {
-        iv11.setBackgroundResource(R.drawable.shieldsuperthumb);
+        iv11.setBackgroundResource(R.drawable.knight);
         tvGoldShow.setText(String.valueOf(heroClass.getGold()));
         tvTopName.setText(heroClass.getName());
         tvHp.setText(getResources().getString(R.string.hp_bar,
@@ -1930,8 +2020,8 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     }
 
     public void experience() {
-        tvExp.setText(getResources().getString(R.string.experience, String.valueOf(experience),
-                String.valueOf(maxExperience)));
+        tvExp.setText(getResources().getString(R.string.experience, String.valueOf(playerExp),
+                String.valueOf(playerMaxExperience)));
 
     } // can be called from other methods
 
@@ -1971,14 +2061,17 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         bot.setExp(0);
 
         bot.setLvl(1);
-        maxExperience = 1000 * bot.getLvl();
-        experience = 0;
+
         if (bot.getId() == BOT1) {
             hpBeforeFightBot1 = bot.getHp();
             hpMaxBeforeFightBot1 = bot.getHp();
+            botMaxExperience1 = EXPERIENCE_TO_LVL;
+            botExp1 = 0;
         } else if (bot.getId() == BOT2) {
             hpBeforeFightBot2 = bot.getHp();
             hpMaxBeforeFightBot2 = bot.getHp();
+            botMaxExperience2 = EXPERIENCE_TO_LVL;
+            botExp2 = 0;
         }
 
         fillTextBot(bot);
@@ -1986,18 +2079,22 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
 
     public void fillTextBot(HeroClass bot) {
         if (bot.getId() == BOT1) {
-            iv12.setBackgroundResource(R.drawable.shieldsuperthumb);
+            iv12.setBackgroundResource(R.drawable.knightone);
             tvGoldShowBot1.setText(String.valueOf(bot.getGold()));
             tvBotName1.setText(bot.getName());
             tvHpBot1.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(bot.getHp()), String.valueOf(bot.getHp())));
+            tvExpBot1.setText(getResources().getString(R.string.experience, String.valueOf(botExp1),
+                    String.valueOf(botMaxExperience1)));
 
         } else if (bot.getId() == BOT2) {
-            iv13.setBackgroundResource(R.drawable.shieldsuperthumb);
+            iv13.setBackgroundResource(R.drawable.knighttwo);
             tvGoldShowBot2.setText(String.valueOf(bot.getGold()));
             tvBotName2.setText(bot.getName());
             tvHpBot2.setText(getResources().getString(R.string.hp_bar,
                     String.valueOf(bot.getHp()), String.valueOf(bot.getHp())));
+            tvExpBot2.setText(getResources().getString(R.string.experience, String.valueOf(botExp2),
+                    String.valueOf(botMaxExperience2)));
         }
     }
 
@@ -2015,10 +2112,13 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
     //______________________________________________________________________________________________
 
     // FUTURE THINGS EXPIERENCE AND LEVEL UP TO one of your stats
+
     public void OnClick(View v) {
+
         switch (v.getId()) {
             case R.id.btnLvlPlusVit:
                 Toast.makeText(GameMap.this, "vit +", Toast.LENGTH_SHORT).show();
+                statAdded = TWO;
                 disableButtons(false);
                 break;
             case R.id.btnLvlPlusStrength:
@@ -2036,20 +2136,84 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         }
     }
 
+    public void statAdderPlayer(final HeroClass heroClass) {
+
+        @SuppressLint("ValidFragment") final
+        DialogFragment shop = new DialogFragment() {
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+                View view = layoutInflater.inflate(R.layout.statadd_layout, null);
+                builder.setView(view);
+                builder.setCancelable(true);
+
+                Button btnStrength = (Button) view.findViewById(R.id.btnStrength);
+                Button btnVitality = (Button) view.findViewById(R.id.btnVitality);
+                Button btnAgility = (Button) view.findViewById(R.id.btnAgility);
+                Button btnFocus = (Button) view.findViewById(R.id.btnFocus);
+
+                btnStrength.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setStrength(heroClass.getStrength() + 1);
+                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                        tvHp.setText(getResources().getString(R.string.hp_bar,
+                                String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getStrength()), Toast.LENGTH_LONG).show();
+                        dismiss();
+
+                    }
+                });
+
+                btnVitality.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setVitality(heroClass.getVitality() + 1);
+                        heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                        hpMaxBeforeFight = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                        Toast.makeText(getActivity(), String.valueOf(heroClass.getVitality()), Toast.LENGTH_LONG).show();
+                        tvHp.setText(getResources().getString(R.string.hp_bar,
+                                String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFight)));
+                        dismiss();
+                    }
+                });
+
+                btnAgility.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setAgility(heroClass.getAgility() + 1);
+                        heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
+                        dismiss();
+                    }
+                });
+
+                btnFocus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heroClass.setFocus(heroClass.getFocus() + 1);
+                        heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
+
+                        dismiss();
+                    }
+                });
+
+                return builder.create();
+            }
+
+
+        };
+        shop.show(getFragmentManager(), "fight result");
+
+    }
+
     public void disableButtons(boolean b) {
         btnLvlPlusVitality.setEnabled(b);
         btnLvlPlusStrength.setEnabled(b);
         btnLvlPlusAgility.setEnabled(b);
         btnLvlPlusFocus.setEnabled(b);
     }
-
-    public void expChecker(HeroClass heroClass) {
-        if (heroClass.getExp() >= 1000) {
-            heroClass.setExp(0);
-
-        }
-    }
-
 
     public String randomName() {
         int min = 0;
@@ -2064,5 +2228,71 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
         return real;
 
     }
+
+    public void statAddedBot(HeroClass heroClass, int randomStat) {
+        if (heroClass.getId() == BOT2) {
+            if (randomStat == ONE) {
+                heroClass.setStrength(heroClass.getStrength() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                tvHpBot2.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.strength)));
+            } else if (randomStat == TWO) {
+                heroClass.setVitality(heroClass.getVitality() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                tvHpBot2.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot2)));
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.vitality)));
+
+            } else if (randomStat == THREE) {
+
+                heroClass.setAgility(heroClass.getAgility() + ONE);
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.agility)));
+                heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
+
+            } else if (randomStat == FOUR) {
+                heroClass.setFocus(heroClass.getFocus() + ONE);
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.focus)));
+                heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
+            }
+        } else if (heroClass.getId() == BOT1) {
+            if (randomStat == ONE) {
+                heroClass.setStrength(heroClass.getStrength() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.strength)));
+            } else if (randomStat == TWO) {
+                heroClass.setVitality(heroClass.getVitality() + ONE);
+                heroClass.setDamage(heroClass.getStrength() * STRENGTH_BONUS_DAMAGE + heroClass.getVitality() * VITALITY_BONUS_DAMAGE);
+                hpMaxBeforeFightBot2 = heroClass.getVitality() * VITALITY_BONUS_HP + heroClass.getStrength() * STRENGTH_BONUS_HP;
+                tvHpBot1.setText(getResources().getString(R.string.hp_bar,
+                        String.valueOf(heroClass.getHp()), String.valueOf(hpMaxBeforeFightBot1)));
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.vitality)));
+            } else if (randomStat == THREE) {
+
+                heroClass.setAgility(heroClass.getAgility() + ONE);
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.agility)));
+                heroClass.setEvasion(heroClass.agility * AGILITY_BONUS);
+
+            } else if (randomStat == FOUR) {
+                heroClass.setFocus(heroClass.getFocus() + ONE);
+                tvLvlUp.setText(getResources().getString(R.string.bot_lvl_up, heroClass.getName(),
+                        getString(R.string.focus)));
+                heroClass.setCrit(heroClass.focus * FOCUS_BONUS);
+            }
+        }
+    }
     //______________________________________________________________________________________________
 }
+

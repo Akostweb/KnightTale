@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="bot_lvl_up">%1$S choose to increase %2$S</string>
+    <string name="lvlup_text">What stat do you want to raise? I choose wisely.</string>
     <string name="level_up">Level up!</string>
     <string name="gold_top">Gold 100</string>
     <string name="app_name">Knights Tale</string>

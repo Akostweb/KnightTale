@@ -10,12 +10,11 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -23,9 +22,6 @@ import java.util.concurrent.TimeUnit;
 public class FightActivity extends Activity {
 
     public static final int FIRST = 1;
-    public static final int TWO = 2;
-    public static final int THREE = 3;
-    public static final int FOUR = 4;
 
     public static final double CRITICAL_HIT = 2.5;
     public static final int MINIMAL_STATS = 8;
@@ -46,11 +42,18 @@ public class FightActivity extends Activity {
     public static final int DRAW = 0;
     public static final int WINNER_FIRST = 1;
     public static final int WINNER_SECOND = 2;
-    public static final boolean CRIT = true;
+    public static final boolean CRITICAL = true;
     public static final boolean EVASION = false;
     public static final int PLAYER = 1;
     public static final int BOT1 = 2;
     public static final int BOT2 = 3;
+
+
+    final public static int ONE = 1;
+    final public static int TWO = 2;
+    final public static int THREE = 3;
+    final public static int FOUR = 4;
+    final public static int TEN = 10;
 
     TextView tvVitality1, tvVitality2, tvStrength1, tvStrength2, tvAgility1, tvAgility2, tvFocus1,
             tvFocus2, tvFightHP1, tvFightHP2, tvFirstName, tvSecondName, tvCritChance1,
@@ -58,7 +61,7 @@ public class FightActivity extends Activity {
 
     Button btnFight;
 
-    int hpFirst, hpSecond, hpDamaged, hpLost;
+    int hpFirst, hpSecond, hpDamaged, hpLost, exp;
 
     boolean stopper = true;
 
@@ -122,6 +125,8 @@ public class FightActivity extends Activity {
 
         fillAllTexts(player, monster);
 
+
+
         if (player.getId() == BOT1 || player.getId() == BOT2) {
             hpDamaged = 0;
             hpLost = 0;
@@ -144,7 +149,6 @@ public class FightActivity extends Activity {
     } // one method called in it roundFight
 
     // Logic of the fighting
-
 
     public void writingText(final HeroClass heroClass, final TextView tv, final int what) {
         runOnUiThread(new Runnable() {
@@ -175,7 +179,7 @@ public class FightActivity extends Activity {
     public void roundFight(final HeroClass hero, final HeroClass monster) {
         stopper = true;
 
-        if (randomCriticalEvasion(hero, CRIT)) {
+        if (randomCriticalEvasion(hero, CRITICAL)) {
             if (randomCriticalEvasion(monster, EVASION)) {
                 hpSecond = monster.getHp();
                 writingText(monster, tvDamage1, FIRST);
@@ -192,12 +196,12 @@ public class FightActivity extends Activity {
                 hpSecond = monster.getHp();
             } else {
                 hpSecond = monster.getHp() - hero.getDamage();
-                hpDamaged = (int) (hpDamaged + hero.getDamage());
+                hpDamaged = hpDamaged + hero.getDamage();
                 writingText(hero, tvDamage1, FOUR);
             }
         }
 
-        if (randomCriticalEvasion(monster, CRIT)) {
+        if (randomCriticalEvasion(monster, CRITICAL)) {
             if (randomCriticalEvasion(hero, EVASION)) {
                 hpFirst = hero.getHp();
                 writingText(hero, tvDamage2, FIRST);
@@ -214,7 +218,7 @@ public class FightActivity extends Activity {
 
             } else {
                 hpFirst = hero.getHp() - monster.getDamage();
-                hpLost = (int) (hpLost + monster.getDamage());
+                hpLost = hpLost + monster.getDamage();
                 writingText(monster, tvDamage2, FOUR);
             }
         }
@@ -238,17 +242,9 @@ public class FightActivity extends Activity {
         Random random = new Random();
         randomNumber = random.nextInt(max - min + 1) + min;
         if (critOrEvasion) {
-            if (randomNumber <= hero.getCrit()) {
-                return true;
-            } else {
-                return false;
-            }
+            return randomNumber <= hero.getCrit();
         } else {
-            if (randomNumber <= hero.getEvasion()) {
-                return true;
-            } else {
-                return false;
-            }
+            return randomNumber <= hero.getEvasion();
         }
 
     } //Critical strike and evasion working
@@ -301,6 +297,7 @@ public class FightActivity extends Activity {
                                             intent.putExtra("name", player.getName());
                                             intent.putExtra("hpDamaged", String.valueOf(hpDamaged));
                                             intent.putExtra("hpLost", String.valueOf(hpLost));
+                                            intent.putExtra("exp", String.valueOf(exp));
                                             setResult(RESULT_OK, intent);
                                             finish();
 
@@ -313,6 +310,7 @@ public class FightActivity extends Activity {
                             intent.putExtra("hpDamaged", String.valueOf(hpDamaged));
                             intent.putExtra("hpLost", String.valueOf(hpLost));
                             intent.putExtra("name", player.getName());
+                            intent.putExtra("exp", String.valueOf(exp));
                             setResult(RESULT_OK, intent);
                             finish();
                         }
@@ -338,8 +336,6 @@ public class FightActivity extends Activity {
         } else if (monster.getHp() <= 0) {
             //btnFight.setEnabled(false);
             fightResult(hero, monster, WINNER_SECOND);
-        } else {
-            //btnFight.setEnabled(true);
         }
     } // watching hp and called fight result if smdy dead
 
@@ -364,6 +360,8 @@ public class FightActivity extends Activity {
         monster.setCrit(monster.focus * FOCUS_BONUS);
         monster.setEvasion(monster.agility * AGILITY_BONUS);
         monster.setRoundCount(NO_ANSWER_ZERO);
+        exp = monster.getStrength() + monster.getVitality() + monster.getAgility() +
+                monster.getFocus() + numberOfStats + randomAction(ONE, TEN);
     } //Main class
 
     public void creatorMonster(HeroClass heroClass, int count) {
@@ -384,7 +382,7 @@ public class FightActivity extends Activity {
 
                 heroClass.setAgility(heroClass.agility + 1);
 
-            } else {
+            } else if (randomStatToMonster() == FOCUS){
 
                 heroClass.setFocus(heroClass.focus + 1);
             }
@@ -447,6 +445,12 @@ public class FightActivity extends Activity {
         tvCritChance2.setText(String.valueOf(second.getCrit()));
 
 
+    }
+
+    public int randomAction(int from, int till) {
+
+        Random random = new Random();
+        return random.nextInt(till - from + 1) + from;
     }
 
     //_____________________________________________________________________________________

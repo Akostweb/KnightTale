@@ -375,10 +375,10 @@
                 <ImageView
                     android:id="@+id/iv12"
                     style="@style/wooden"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="@dimen/statue"
-                    android:layout_marginRight="@dimen/statue"
-                    android:contentDescription="@string/image" />
+                    android:layout_gravity="center_horizontal"/>
+                    <!--&lt;!&ndash;android:layout_marginLeft="@dimen/statue"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_marginRight="@dimen/statue"&ndash;&gt;-->
+                    <!--android:contentDescription="@string/image" />-->
 
                 <ImageView
                     android:id="@+id/iv13"
@@ -469,7 +469,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:background="@drawable/aone" />
+                    android:background="@drawable/knight" />
                 <Button
                     android:id="@+id/ivBot1"
                     android:layout_width="@dimen/box_button"
@@ -477,7 +477,7 @@
                     android:layout_gravity="center"
                     android:visibility="invisible"
                     android:gravity="center"
-                    android:background="@drawable/next" />
+                    android:background="@drawable/knightone" />
                 <Button
                     android:id="@+id/ivBot2"
                     android:layout_width="@dimen/box_button"
@@ -485,7 +485,7 @@
                     android:layout_gravity="center"
                     android:visibility="invisible"
                     android:gravity="center"
-                    android:background="@drawable/jail" />
+                    android:background="@drawable/knighttwo" />
 
 
             </FrameLayout>
@@ -816,6 +816,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvLvlUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
