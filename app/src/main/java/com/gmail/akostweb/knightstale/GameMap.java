@@ -702,7 +702,7 @@ public class GameMap extends AppCompatActivity implements DialogInterface.OnClic
             } else if (heroClass.getStep() == 15) {
                 iv152.setBackgroundResource(R.drawable.knightone);
             } else if (heroClass.getStep() == 16) {
-                iv161.setBackgroundResource(R.drawable.knightone);
+                iv162.setBackgroundResource(R.drawable.knightone);
             }
 
         } else if (heroClass.getId() == BOT2) {
